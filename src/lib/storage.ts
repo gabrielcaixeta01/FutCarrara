@@ -7,10 +7,19 @@
  * - Toda leitura passa por guard: try/catch no parse + validação de shape.
  *   Dado corrompido ou de versão antiga nunca derruba o app.
  */
-import type { Group, Draw, Player, Skill } from '@/types';
+import type {
+  Group,
+  Draw,
+  DrawPlayer,
+  Player,
+  Skill,
+  Team,
+  DrawResult,
+} from '@/types';
 
 const GROUP_KEY = 'futcarrara:group';
 const DRAWS_KEY = 'futcarrara:draws';
+const RESULT_KEY = 'futcarrara:lastResult';
 const SCHEMA_VERSION = 1;
 
 /** Acesso a localStorage tolerante a SSR e a modos onde ele lança/está off. */
@@ -18,6 +27,16 @@ function ls(): Storage | null {
   try {
     if (typeof window === 'undefined') return null;
     return window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
+/** sessionStorage para o resultado do sorteio (transitório, some ao fechar). */
+function ss(): Storage | null {
+  try {
+    if (typeof window === 'undefined') return null;
+    return window.sessionStorage;
   } catch {
     return null;
   }
@@ -62,12 +81,20 @@ function isStarters(v: unknown): v is [number, number] {
   );
 }
 
-function isTeams(v: unknown): v is string[][] {
+function isDrawPlayer(v: unknown): v is DrawPlayer {
+  return (
+    isRecord(v) &&
+    typeof v.id === 'string' &&
+    typeof v.name === 'string' &&
+    isSkill(v.skill) &&
+    (v.guest === undefined || v.guest === true)
+  );
+}
+
+function isDrawTeams(v: unknown): v is DrawPlayer[][] {
   return (
     Array.isArray(v) &&
-    v.every(
-      (t) => Array.isArray(t) && t.every((id) => typeof id === 'string'),
-    )
+    v.every((t) => Array.isArray(t) && t.every(isDrawPlayer))
   );
 }
 
@@ -80,7 +107,29 @@ function isDraw(v: unknown): v is Draw {
     typeof v.seed === 'number' &&
     typeof v.numTeams === 'number' &&
     typeof v.perTeam === 'number' &&
-    isTeams(v.teams) &&
+    isDrawTeams(v.teams) &&
+    (v.starters === undefined || isStarters(v.starters)) &&
+    (v.starterSeed === undefined || typeof v.starterSeed === 'number')
+  );
+}
+
+function isTeam(v: unknown): v is Team {
+  return (
+    isRecord(v) &&
+    Array.isArray(v.players) &&
+    v.players.every(isPlayer) &&
+    typeof v.total === 'number' &&
+    typeof v.avg === 'number'
+  );
+}
+
+function isDrawResult(v: unknown): v is DrawResult {
+  return (
+    isRecord(v) &&
+    Array.isArray(v.teams) &&
+    v.teams.every(isTeam) &&
+    typeof v.seed === 'number' &&
+    typeof v.spread === 'number' &&
     (v.starters === undefined || isStarters(v.starters)) &&
     (v.starterSeed === undefined || typeof v.starterSeed === 'number')
   );
@@ -142,6 +191,33 @@ export function saveDraw(draw: Draw): void {
   const draws = loadDraws().filter((d) => d.id !== draw.id);
   draws.push(draw);
   writeDraws(draws);
+}
+
+// --- Último resultado (transitório) -----------------------------------------
+// Snapshot completo do sorteio recém-feito, incluindo visitantes (que não
+// existem no elenco). É como a tela de resultado recebe os times.
+
+export function saveLastResult(result: DrawResult): void {
+  const store = ss();
+  if (!store) return;
+  try {
+    store.setItem(RESULT_KEY, JSON.stringify(result));
+  } catch {
+    // best-effort.
+  }
+}
+
+export function loadLastResult(): DrawResult | null {
+  const store = ss();
+  if (!store) return null;
+  try {
+    const raw = store.getItem(RESULT_KEY);
+    if (raw === null) return null;
+    const parsed: unknown = JSON.parse(raw);
+    return isDrawResult(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
 }
 
 // --- Backup -----------------------------------------------------------------

@@ -3,7 +3,7 @@
 import { Trash2 } from 'lucide-react';
 import type { Player, Skill } from '@/types';
 import { cn } from '@/lib/utils';
-import { SkillSelect } from './SkillSelect';
+import { SkillSelect } from '@/components/ui/SkillSelect';
 import { Toggle } from './Toggle';
 
 interface Props {

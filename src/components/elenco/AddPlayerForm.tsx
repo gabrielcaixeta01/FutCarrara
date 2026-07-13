@@ -3,7 +3,7 @@
 import { useState, type RefObject } from 'react';
 import { Plus } from 'lucide-react';
 import type { Skill } from '@/types';
-import { SkillSelect } from './SkillSelect';
+import { SkillSelect } from '@/components/ui/SkillSelect';
 
 interface Props {
   onAdd: (name: string, skill: Skill) => void;
