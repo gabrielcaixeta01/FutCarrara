@@ -1,10 +1,11 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Search, Users } from 'lucide-react';
+import { ArrowLeft, Download, FileUp, Search, Upload, Users, X } from 'lucide-react';
 import type { Player } from '@/types';
 import { useGroup } from '@/hooks/useGroup';
+import { exportJSON, importJSON } from '@/lib/storage';
 import { AddPlayerForm } from '@/components/elenco/AddPlayerForm';
 import { PlayerRow } from '@/components/elenco/PlayerRow';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
@@ -25,14 +26,32 @@ export default function ElencoPage() {
     updatePlayer,
     removePlayer,
     toggleActive,
+    refreshGroup,
     loading,
   } = useGroup();
 
   const [query, setQuery] = useState('');
   const [pendingRemoval, setPendingRemoval] = useState<Player | null>(null);
+  const [importOpen, setImportOpen] = useState(false);
+  const [importText, setImportText] = useState('');
+  const [importError, setImportError] = useState<string | null>(null);
   const nameRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const activeCount = players.filter((p) => p.active).length;
+
+  useEffect(() => {
+    if (!importOpen) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setImportOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [importOpen]);
 
   // Filtra por nome; ativos primeiro, alfabético dentro de cada grupo.
   const visible = useMemo(() => {
@@ -45,6 +64,51 @@ export default function ElencoPage() {
           a.name.localeCompare(b.name, 'pt-BR'),
       );
   }, [players, query]);
+
+  function handleExport() {
+    const blob = new Blob([exportJSON()], {
+      type: 'application/json;charset=utf-8',
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `futcarrara-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  }
+
+  async function handleImportFile(
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      setImportText(text);
+      setImportError(null);
+    } catch {
+      setImportError('Não consegui ler o arquivo selecionado.');
+    } finally {
+      event.target.value = '';
+    }
+  }
+
+  function handleImportSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    try {
+      importJSON(importText);
+      refreshGroup();
+      setImportOpen(false);
+      setImportText('');
+      setImportError(null);
+    } catch (error) {
+      setImportError(error instanceof Error ? error.message : 'Backup inválido.');
+    }
+  }
 
   return (
     <main className="mx-auto min-h-dvh max-w-md pb-16">
@@ -80,6 +144,30 @@ export default function ElencoPage() {
           />
         </div>
       </header>
+
+      <div className="px-4 pt-4">
+        <div className="grid grid-cols-2 gap-3 rounded-2xl border border-line bg-pitch-soft p-3">
+          <button
+            type="button"
+            onClick={handleExport}
+            className="flex h-12 items-center justify-center gap-2 rounded-xl border border-line bg-pitch px-3 font-semibold text-slate-100 transition-colors hover:bg-line focus:outline-none focus-visible:ring-2 focus-visible:ring-grass"
+          >
+            <Download className="size-4" />
+            Baixar JSON
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setImportError(null);
+              setImportOpen(true);
+            }}
+            className="flex h-12 items-center justify-center gap-2 rounded-xl bg-grass px-3 font-semibold text-pitch transition-colors hover:bg-grass-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-grass-soft"
+          >
+            <Upload className="size-4" />
+            Importar
+          </button>
+        </div>
+      </div>
 
       <div className="px-4 pt-4">
         <AddPlayerForm onAdd={addPlayer} nameRef={nameRef} />
@@ -141,6 +229,91 @@ export default function ElencoPage() {
         }}
         onCancel={() => setPendingRemoval(null)}
       />
+
+      {importOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-4 sm:items-center"
+          onClick={() => setImportOpen(false)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="import-title"
+            onClick={(event) => event.stopPropagation()}
+            className="w-full max-w-sm rounded-2xl border border-line bg-pitch-soft p-6 shadow-xl"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 id="import-title" className="text-lg font-semibold text-slate-100">
+                  Importar backup
+                </h2>
+                <p className="mt-1 text-sm text-slate-400">
+                  Cole o JSON exportado ou carregue um arquivo para restaurar o elenco.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setImportOpen(false)}
+                className="flex size-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-pitch hover:text-slate-100"
+                aria-label="Fechar"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+
+            <form className="mt-5 space-y-4" onSubmit={handleImportSubmit}>
+              <label className="block space-y-2">
+                <span className="text-sm font-medium text-slate-200">
+                  Arquivo JSON
+                </span>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="application/json,.json"
+                  onChange={handleImportFile}
+                  className="block w-full rounded-xl border border-line bg-pitch px-3 py-2 text-sm text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-grass file:px-3 file:py-2 file:font-semibold file:text-pitch file:transition-colors hover:file:bg-grass-soft"
+                />
+              </label>
+
+              <label className="block space-y-2">
+                <span className="text-sm font-medium text-slate-200">
+                  JSON do backup
+                </span>
+                <textarea
+                  value={importText}
+                  onChange={(event) => setImportText(event.target.value)}
+                  placeholder="Cole aqui o JSON exportado"
+                  rows={10}
+                  className="w-full rounded-xl border border-line bg-pitch px-3 py-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-grass focus:outline-none focus-visible:ring-2 focus-visible:ring-grass"
+                />
+              </label>
+
+              {importError && (
+                <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+                  {importError}
+                </p>
+              )}
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setImportOpen(false)}
+                  className="h-12 flex-1 rounded-xl border border-line font-medium text-slate-200 transition-colors hover:bg-line focus:outline-none focus-visible:ring-2 focus-visible:ring-grass"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-grass font-semibold text-pitch transition-colors hover:bg-grass-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-grass-soft"
+                >
+                  <FileUp className="size-4" />
+                  Importar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
