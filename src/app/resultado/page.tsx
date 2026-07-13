@@ -19,9 +19,9 @@ import { TeamCard } from '@/components/resultado/TeamCard';
 import { StartersBanner } from '@/components/resultado/StartersBanner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
-/** Congela o resultado num Draw imutável (snapshot de nome/skill, não ids). */
-function toDraw(result: DrawResult, groupId: string, seed: number): Draw {
-  const teams: DrawPlayer[][] = result.teams.map((t) =>
+/** Snapshot dos times (nome/skill congelados, não ids). */
+function toDrawTeams(result: DrawResult): DrawPlayer[][] {
+  return result.teams.map((t) =>
     t.players.map((p) => ({
       id: p.id,
       name: p.name,
@@ -29,6 +29,10 @@ function toDraw(result: DrawResult, groupId: string, seed: number): Draw {
       ...(p.guest ? { guest: true as const } : {}),
     })),
   );
+}
+
+/** Congela o resultado num Draw completo. */
+function toDraw(result: DrawResult, groupId: string, seed: number): Draw {
   return {
     id: uid(),
     groupId,
@@ -36,7 +40,7 @@ function toDraw(result: DrawResult, groupId: string, seed: number): Draw {
     seed,
     numTeams: result.teams.length,
     perTeam: result.teams[0]?.players.length ?? 0,
-    teams,
+    teams: toDrawTeams(result),
     ...(result.starters ? { starters: result.starters } : {}),
     ...(result.starterSeed !== undefined
       ? { starterSeed: result.starterSeed }
@@ -51,11 +55,20 @@ export default function ResultadoPage() {
   const [showLevels, setShowLevels] = useState(false);
   const [copied, setCopied] = useState(false);
   const [confirmReshuffle, setConfirmReshuffle] = useState(false);
+  // Draw desta sessão de resultado. Enquanto o admin estiver aqui, todo
+  // "sortear de novo" substitui este id em vez de acumular sorteios.
+  const [drawId, setDrawId] = useState<string | null>(null);
 
   useEffect(() => {
-    setResult(loadLastResult());
+    const snap = loadLastResult();
+    setResult(snap);
     const g = loadGroup();
     if (g) setGroupName(g.name);
+    if (snap) {
+      // Liga a sessão ao Draw criado no /sorteio (match inicial pela seed).
+      const draw = loadDraws().find((d) => d.seed === snap.seed);
+      setDrawId(draw?.id ?? null);
+    }
     setLoading(false);
   }, []);
 
@@ -76,16 +89,12 @@ export default function ResultadoPage() {
     setResult(next);
     saveLastResult(next);
 
-    // Corrige o Draw existente (starters + starterSeed). Não cria sorteio novo:
-    // o histórico registra quem de fato começou, o último reroll.
-    if (next.starters) {
-      const draw = loadDraws().find((d) => d.seed === next.seed);
-      if (draw) {
-        updateDraw(draw.id, {
-          starters: next.starters,
-          starterSeed: next.starterSeed,
-        });
-      }
+    // Corrige o Draw da sessão (starters + starterSeed). Mesmo id, sem criar novo.
+    if (next.starters && drawId) {
+      updateDraw(drawId, {
+        starters: next.starters,
+        starterSeed: next.starterSeed,
+      });
     }
   }
 
@@ -99,8 +108,24 @@ export default function ResultadoPage() {
 
     setResult(next);
     saveLastResult(next);
-    const g = loadGroup();
-    if (g) saveDraw(toDraw(next, g.id, seed)); // times novos = fato novo
+
+    // Um Draw por sessão de resultado: substitui o mesmo id, não acumula.
+    if (drawId) {
+      updateDraw(drawId, {
+        seed: next.seed,
+        starterSeed: next.starterSeed,
+        teams: toDrawTeams(next),
+        starters: next.starters,
+      });
+    } else {
+      // Sem draw da sessão (ex.: histórico perdido): cria e adota o id.
+      const g = loadGroup();
+      if (g) {
+        const draw = toDraw(next, g.id, seed);
+        saveDraw(draw);
+        setDrawId(draw.id);
+      }
+    }
 
     setConfirmReshuffle(false);
   }
