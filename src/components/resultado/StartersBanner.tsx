@@ -1,0 +1,29 @@
+'use client';
+
+import { Shuffle } from 'lucide-react';
+
+interface Props {
+  starters: [number, number];
+  onReroll: () => void;
+}
+
+/** Destaque de quem começa + re-sorteio só dos starters (times intactos). */
+export function StartersBanner({ starters, onReroll }: Props) {
+  const [a, b] = starters;
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-grass/40 bg-grass/10 px-4 py-3">
+      <p className="text-sm text-slate-200">
+        <span className="font-semibold text-grass-soft">Começam:</span> Time{' '}
+        {a + 1} × Time {b + 1}
+      </p>
+      <button
+        type="button"
+        onClick={onReroll}
+        className="flex items-center gap-1.5 text-sm text-slate-300 transition-colors hover:text-grass-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-grass focus-visible:rounded"
+      >
+        <Shuffle className="size-4" />
+        sortear quem começa
+      </button>
+    </div>
+  );
+}

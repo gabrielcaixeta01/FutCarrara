@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { cn } from '@/lib/utils';
 
 interface Props {
   open: boolean;
@@ -9,9 +10,11 @@ interface Props {
   confirmLabel: string;
   onConfirm: () => void;
   onCancel: () => void;
+  /** 'danger' (padrão) = vermelho; 'primary' = verde. */
+  tone?: 'danger' | 'primary';
 }
 
-/** Diálogo de confirmação para ações irreversíveis (ex.: remover jogador). */
+/** Diálogo de confirmação para ações que valem uma pausa antes de acontecer. */
 export function ConfirmDialog({
   open,
   title,
@@ -19,6 +22,7 @@ export function ConfirmDialog({
   confirmLabel,
   onConfirm,
   onCancel,
+  tone = 'danger',
 }: Props) {
   const cancelRef = useRef<HTMLButtonElement>(null);
 
@@ -62,7 +66,12 @@ export function ConfirmDialog({
           <button
             type="button"
             onClick={onConfirm}
-            className="h-12 flex-1 rounded-xl bg-red-600 font-semibold text-white transition-colors hover:bg-red-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+            className={cn(
+              'h-12 flex-1 rounded-xl font-semibold transition-colors focus:outline-none focus-visible:ring-2',
+              tone === 'primary'
+                ? 'bg-grass text-pitch hover:bg-grass-soft focus-visible:ring-grass-soft'
+                : 'bg-red-600 text-white hover:bg-red-500 focus-visible:ring-red-400',
+            )}
           >
             {confirmLabel}
           </button>

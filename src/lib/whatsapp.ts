@@ -1,5 +1,8 @@
 import type { DrawResult } from '@/types';
 
+/** Quadradinho colorido por time. Casa com as cores da tela de resultado. */
+const TEAM_EMOJI = ['🟦', '🟥', '🟨', '🟪'] as const;
+
 /**
  * Formata o resultado como texto pronto pra colar no grupo.
  *
@@ -13,9 +16,24 @@ import type { DrawResult } from '@/types';
  *
  * ▶️ Começam: Time 1 x Time 3
  *
- * NÃO inclua skill nem soma no texto. Isso é informação interna do admin.
+ * NÃO inclui skill nem soma. Isso é informação interna do admin.
  */
 export function formatForWhatsApp(result: DrawResult, groupName: string): string {
-  // TODO
-  throw new Error('not implemented');
+  const lines: string[] = [`⚽ ${groupName.toUpperCase()}`];
+
+  result.teams.forEach((team, i) => {
+    const emoji = TEAM_EMOJI[i] ?? '⬜';
+    lines.push(
+      '',
+      `${emoji} TIME ${i + 1}`,
+      team.players.map((p) => p.name).join(', '),
+    );
+  });
+
+  if (result.starters) {
+    const [a, b] = result.starters;
+    lines.push('', `▶️ Começam: Time ${a + 1} x Time ${b + 1}`);
+  }
+
+  return lines.join('\n');
 }

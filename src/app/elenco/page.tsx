@@ -7,7 +7,7 @@ import type { Player } from '@/types';
 import { useGroup } from '@/hooks/useGroup';
 import { AddPlayerForm } from '@/components/elenco/AddPlayerForm';
 import { PlayerRow } from '@/components/elenco/PlayerRow';
-import { ConfirmDialog } from '@/components/elenco/ConfirmDialog';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 /** Normaliza pra busca: sem acento, minúsculo. "José" casa com "jose". */
 function norm(s: string): string {
