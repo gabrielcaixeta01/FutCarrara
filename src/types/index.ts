@@ -30,6 +30,8 @@ export interface DrawResult {
   spread: number;
   /** Índices dos 2 times que começam. Só quando numTeams >= 3. */
   starters?: [number, number];
+  /** Seed usada para sortear os starters. Presente sempre que starters existir. */
+  starterSeed?: number;
 }
 
 /** Sorteio persistido no histórico. */
@@ -43,6 +45,8 @@ export interface Draw {
   /** playerIds por time. Referência, não cópia. */
   teams: string[][];
   starters?: [number, number];
+  /** Seed usada para sortear os starters. */
+  starterSeed?: number;
 }
 
 /** Arranjo possível para N confirmados. */

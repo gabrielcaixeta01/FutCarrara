@@ -79,6 +79,7 @@ export function drawTeams(
   numTeams: number,
   perTeam: number,
   seed?: number,
+  starterSeed?: number,
 ): DrawResult {
   if (pool.length !== numTeams * perTeam) {
     throw new Error(
@@ -147,10 +148,30 @@ export function drawTeams(
   };
 
   if (numTeams >= 3) {
-    result.starters = pickStarters(numTeams, s);
+    // Deriva da seed dos times (mas não a seed crua) quando não vem de fora.
+    const ss = starterSeed ?? ((s ^ 0x9e3779b9) >>> 0);
+    result.starters = pickStarters(numTeams, ss);
+    result.starterSeed = ss;
   }
 
   return result;
+}
+
+/**
+ * Re-sorteia apenas os starters, mantendo os times intactos.
+ * Pura: retorna um novo objeto. Com menos de 3 times é no-op
+ * (retorna o próprio result, sem starters).
+ */
+export function rerollStarters(
+  result: DrawResult,
+  starterSeed: number,
+): DrawResult {
+  if (result.teams.length < 3) return result;
+  return {
+    ...result,
+    starters: pickStarters(result.teams.length, starterSeed),
+    starterSeed,
+  };
 }
 
 /** Sorteia os 2 times que começam. Só faz sentido com numTeams >= 3. */
