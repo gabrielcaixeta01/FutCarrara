@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-pitch: #0d1f17;
+  --color-pitch-soft: #14291f;
+  --color-line: #1f3a2c;
+  --color-grass: #22c55e;
+  --color-grass-soft: #4ade80;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-pitch);
+  color: #f8fafc;
+  -webkit-font-smoothing: antialiased;
+}

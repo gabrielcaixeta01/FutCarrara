@@ -1,0 +1,71 @@
+import { describe, it, expect } from 'vitest';
+import { drawTeams, validFormats } from '../balance';
+import type { Player, Skill } from '@/types';
+
+const mk = (skills: number[]): Player[] =>
+  skills.map((s, i) => ({
+    id: `p${i}`,
+    name: `P${i}`,
+    skill: s as Skill,
+    active: true,
+  }));
+
+describe('drawTeams', () => {
+  it('lança erro se a conta não fecha', () => {
+    expect(() => drawTeams(mk([1, 2, 3]), 2, 6)).toThrow();
+  });
+
+  it('distribui todos os jogadores sem repetir nem perder', () => {
+    const { teams } = drawTeams(mk([5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0, 0]), 2, 6, 42);
+    const ids = teams.flatMap((t) => t.players.map((p) => p.id));
+    expect(ids).toHaveLength(12);
+    expect(new Set(ids).size).toBe(12);
+  });
+
+  it('acha o balanceamento perfeito quando ele existe', () => {
+    const { spread } = drawTeams(mk([5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0, 0]), 2, 6, 42);
+    expect(spread).toBe(0);
+  });
+
+  it('mantém spread baixo em 4 times de 5', () => {
+    const pool = mk([5, 5, 5, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2, 1, 1, 1, 0, 0, 0]);
+    expect(drawTeams(pool, 4, 5, 7).spread).toBeLessThanOrEqual(1);
+  });
+
+  it('é determinístico para a mesma seed', () => {
+    const pool = mk([5, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1, 0]);
+    const a = drawTeams(pool, 2, 6, 99);
+    const b = drawTeams(pool, 2, 6, 99);
+    expect(a.teams.map((t) => t.total)).toEqual(b.teams.map((t) => t.total));
+  });
+
+  it('seeds diferentes geram composições diferentes', () => {
+    const pool = mk([5, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1, 0]);
+    const ids = (seed: number) =>
+      drawTeams(pool, 2, 6, seed).teams[0]!.players.map((p) => p.id).sort();
+    expect(ids(1)).not.toEqual(ids(2));
+  });
+
+  it('lida com todos os jogadores no mesmo nível', () => {
+    expect(drawTeams(mk(Array(12).fill(3)), 2, 6, 5).spread).toBe(0);
+  });
+
+  it('funciona com 7 por time', () => {
+    const pool = mk([5, 5, 4, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1, 0]);
+    const { teams } = drawTeams(pool, 2, 7, 3);
+    expect(teams).toHaveLength(2);
+    expect(teams[0]!.players).toHaveLength(7);
+  });
+});
+
+describe('validFormats', () => {
+  it('sugere 4x5 sem sobra para 20 confirmados', () => {
+    const f = validFormats(20);
+    expect(f[0]).toEqual({ numTeams: 4, perTeam: 5, leftover: 0 });
+    expect(f).toContainEqual({ numTeams: 3, perTeam: 6, leftover: 2 });
+  });
+
+  it('não sugere formato que não cabe', () => {
+    expect(validFormats(9)).toEqual([]);
+  });
+});
