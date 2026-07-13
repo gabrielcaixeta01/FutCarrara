@@ -22,6 +22,52 @@ const DRAWS_KEY = 'futcarrara:draws';
 const RESULT_KEY = 'futcarrara:lastResult';
 const SCHEMA_VERSION = 1;
 
+const DEFAULT_GROUP_NAME = 'Futebol Carrara';
+const DEFAULT_SKILL: Skill = 3;
+
+const DEFAULT_PLAYERS: Array<{ name: string; skill: Skill; active: boolean }> = [
+  { name: 'Carrara', skill: 5, active: true },
+  { name: 'Caland', skill: 5, active: true },
+  { name: 'Caixeta', skill: 5, active: true },
+  { name: 'Thiago M', skill: 5, active: true },
+  { name: 'PZ', skill: 5, active: true },
+  { name: 'Jaques', skill: 5, active: true },
+  { name: 'Luis H', skill: 5, active: true },
+  { name: 'Diego', skill: 5, active: true },
+  { name: 'Érico', skill: 5, active: true },
+  { name: 'Cauê', skill: 4, active: true },
+  { name: 'Léo', skill: 4, active: true },
+  { name: 'Nenzin', skill: 4, active: true },
+  { name: 'JP', skill: 4, active: true },
+  { name: 'Paim', skill: 4, active: true },
+  { name: 'Bolt', skill: 4, active: true },
+  { name: 'Lyra', skill: 4, active: true },
+  { name: 'Joao M', skill: 4, active: true },
+  { name: 'Saad', skill: 4, active: true },
+  { name: 'Guilherme Galo', skill: 3, active: true },
+  { name: 'Pedro Andrade', skill: 3, active: true },
+  { name: 'Portugal', skill: 3, active: true },
+  { name: 'Dp', skill: 3, active: true },
+  { name: 'Tom', skill: 3, active: true },
+  { name: 'Max', skill: 3, active: true },
+  { name: 'GB', skill: 3, active: true },
+  { name: 'Adriano', skill: 3, active: true },
+  { name: 'Igor', skill: 3, active: true },
+  { name: 'Trento', skill: 3, active: true },
+  { name: 'Luis H', skill: 5, active: true },
+  { name: 'Diego', skill: 5, active: true },
+  { name: 'Diegordo', skill: 3, active: false },
+  { name: 'Marcelo', skill: 2, active: true },
+  { name: 'Felipe Fidalgo', skill: 2, active: true },
+  { name: 'Dan', skill: 2, active: true },
+  { name: 'Rafael Aquino', skill: 1, active: true },
+  { name: 'Lucas Aquino', skill: 1, active: true },
+  { name: 'Vitor Mello', skill: 1, active: true },
+  { name: 'Érico', skill: 5, active: true },
+  { name: 'Joao M', skill: 4, active: true },
+
+];
+
 /** Acesso a localStorage tolerante a SSR e a modos onde ele lança/está off. */
 function ls(): Storage | null {
   try {
@@ -30,6 +76,19 @@ function ls(): Storage | null {
   } catch {
     return null;
   }
+}
+
+export function createSeedGroup(): Group {
+  return {
+    id: crypto.randomUUID(),
+    name: DEFAULT_GROUP_NAME,
+    players: DEFAULT_PLAYERS.map((player) => ({
+      id: crypto.randomUUID(),
+      name: player.name,
+      skill: player.skill,
+      active: player.active,
+    })),
+  };
 }
 
 /** sessionStorage para o resultado do sorteio (transitório, some ao fechar). */

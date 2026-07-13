@@ -2,73 +2,20 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import type { Group, Player, Skill } from '@/types';
-import { loadGroup, saveGroup } from '@/lib/storage';
+import { createSeedGroup, saveGroup } from '@/lib/storage';
 import { uid } from '@/lib/utils';
-
-const DEFAULT_SKILL: Skill = 3;
-
-const DEFAULT_PLAYERS: Array<{ name: string; active: boolean }> = [
-  { name: 'Carrara', active: true },
-  { name: 'Aquino', active: true },
-  { name: 'Lucas', active: true },
-  { name: 'Gui', active: true },
-  { name: 'Pedro A', active: true },
-  { name: 'Caland', active: true },
-  { name: 'Caixeta', active: true },
-  { name: 'Portugal', active: true },
-  { name: 'Cauê', active: true },
-  { name: 'Thiago M', active: true },
-  { name: 'Dp', active: true },
-  { name: 'Saad', active: true },
-  { name: 'Felipe', active: true },
-  { name: 'Marcelo', active: true },
-  { name: 'PZ', active: true },
-  { name: 'Tom', active: true },
-  { name: 'Max', active: true },
-  { name: 'Felipe F.', active: true },
-  { name: 'GB', active: true },
-  { name: 'Léo', active: true },
-  { name: 'Gm', active: true },
-  { name: 'Nenzin', active: true },
-  { name: 'JP', active: true },
-  { name: 'Dan', active: true },
-  { name: 'André M.', active: false },
-  { name: 'Rafael Augusto', active: false },
-  { name: 'Victor (Felipe F.)', active: false },
-  { name: 'Paim', active: false },
-];
-
-function createDefaultGroup(): Group {
-  return {
-    id: uid(),
-    name: 'Futebol Carrara',
-    players: DEFAULT_PLAYERS.map((player) => ({
-      id: uid(),
-      name: player.name,
-      skill: DEFAULT_SKILL,
-      active: player.active,
-    })),
-  };
-}
 
 export function useGroup() {
   const [group, setGroup] = useState<Group | null>(null);
   const [loading, setLoading] = useState(true);
 
   const refreshGroup = useCallback(() => {
-    const existing = loadGroup();
-    if (existing) {
-      setGroup(existing);
-      return;
-    }
-
-    const fresh = createDefaultGroup();
-    saveGroup(fresh);
-    setGroup(fresh);
+    const seed = createSeedGroup();
+    saveGroup(seed);
+    setGroup(seed);
   }, []);
 
-  // Carrega no mount. localStorage só existe no client, então isto roda
-  // dentro de useEffect, nunca no render.
+  // Sempre sobe do seed do código ao iniciar a aplicação.
   useEffect(() => {
     refreshGroup();
     setLoading(false);
