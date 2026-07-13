@@ -23,11 +23,10 @@ export function formatForWhatsApp(result: DrawResult, groupName: string): string
 
   result.teams.forEach((team, i) => {
     const emoji = TEAM_EMOJI[i] ?? '⬜';
-    lines.push(
-      '',
-      `${emoji} TIME ${i + 1}`,
-      team.players.map((p) => p.name).join(', '),
-    );
+    const names = team.players
+      .map((p) => (p.guest ? `${p.name} (visitante)` : p.name))
+      .join(', ');
+    lines.push('', `${emoji} TIME ${i + 1}`, names);
   });
 
   if (result.starters) {

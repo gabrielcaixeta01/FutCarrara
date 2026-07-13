@@ -193,6 +193,19 @@ export function saveDraw(draw: Draw): void {
   writeDraws(draws);
 }
 
+/**
+ * Aplica um patch a um Draw já salvo (ex.: re-sorteio dos starters).
+ * Corrige o registro do que aconteceu — não cria sorteio novo.
+ */
+export function updateDraw(id: string, patch: Partial<Omit<Draw, 'id'>>): void {
+  const draws = loadDraws();
+  const idx = draws.findIndex((d) => d.id === id);
+  const existing = draws[idx];
+  if (!existing) return;
+  draws[idx] = { ...existing, ...patch };
+  writeDraws(draws);
+}
+
 // --- Último resultado (transitório) -----------------------------------------
 // Snapshot completo do sorteio recém-feito, incluindo visitantes (que não
 // existem no elenco). É como a tela de resultado recebe os times.

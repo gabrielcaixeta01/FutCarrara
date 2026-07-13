@@ -6,10 +6,12 @@ import { ArrowLeft, Check, Copy, Eye, EyeOff, RefreshCw } from 'lucide-react';
 import type { Draw, DrawPlayer, DrawResult } from '@/types';
 import { drawTeams, rerollStarters } from '@/lib/balance';
 import {
+  loadDraws,
   loadGroup,
   loadLastResult,
   saveDraw,
   saveLastResult,
+  updateDraw,
 } from '@/lib/storage';
 import { uid } from '@/lib/utils';
 import { formatForWhatsApp } from '@/lib/whatsapp';
@@ -72,7 +74,19 @@ export default function ResultadoPage() {
     if (!result) return;
     const next = rerollStarters(result, Date.now());
     setResult(next);
-    saveLastResult(next); // starters só na view/sessão; não vira novo Draw
+    saveLastResult(next);
+
+    // Corrige o Draw existente (starters + starterSeed). Não cria sorteio novo:
+    // o histórico registra quem de fato começou, o último reroll.
+    if (next.starters) {
+      const draw = loadDraws().find((d) => d.seed === next.seed);
+      if (draw) {
+        updateDraw(draw.id, {
+          starters: next.starters,
+          starterSeed: next.starterSeed,
+        });
+      }
+    }
   }
 
   function reshuffle() {
