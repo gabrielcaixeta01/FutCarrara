@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Check, Copy, Eye, EyeOff, RefreshCw } from 'lucide-react';
+import { Check, Copy, Eye, EyeOff, RefreshCw } from 'lucide-react';
 import type { Draw, DrawPlayer, DrawResult } from '@/types';
 import { drawTeams, rerollStarters } from '@/lib/balance';
 import {
@@ -131,15 +131,8 @@ export default function ResultadoPage() {
   }
 
   return (
-    <main className="mx-auto min-h-dvh max-w-2xl px-4 pb-16">
+    <main className="mx-auto min-h-dvh max-w-2xl px-4 pb-28 sm:pb-16">
       <header className="flex items-center gap-3 border-b border-line pb-3 pt-4">
-        <Link
-          href="/sorteio"
-          aria-label="Voltar ao sorteio"
-          className="flex size-9 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-pitch-soft hover:text-slate-100"
-        >
-          <ArrowLeft className="size-5" />
-        </Link>
         <h1 className="flex-1 text-xl font-bold tracking-tight text-grass-soft">
           Resultado
         </h1>

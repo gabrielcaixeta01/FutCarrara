@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import type { Draw, DrawPlayer, Format, Player, Skill } from '@/types';
 import { useGroup } from '@/hooks/useGroup';
 import { drawTeams, validFormats } from '@/lib/balance';
@@ -165,16 +165,9 @@ export default function SorteioPage() {
   }
 
   return (
-    <main className="mx-auto min-h-dvh max-w-md pb-44">
+    <main className="mx-auto min-h-dvh max-w-md pb-44 sm:pb-16">
       <header className="sticky top-0 z-10 space-y-3 border-b border-line bg-pitch/95 px-4 pb-3 pt-4 backdrop-blur">
         <div className="flex items-center gap-3">
-          <Link
-            href="/"
-            aria-label="Voltar"
-            className="flex size-9 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-pitch-soft hover:text-slate-100"
-          >
-            <ArrowLeft className="size-5" />
-          </Link>
           <h1 className="flex-1 text-xl font-bold tracking-tight text-grass-soft">
             Sorteio
           </h1>

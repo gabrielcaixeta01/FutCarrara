@@ -37,7 +37,7 @@ interface Props {
 export function SortearFooter({ count, formats, onPick, onClear }: Props) {
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-md space-y-3 border-t border-line bg-pitch/95 px-4 pt-3 backdrop-blur"
+      className="fixed inset-x-0 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-20 mx-auto max-w-md space-y-3 border-t border-line bg-pitch/95 px-4 pt-3 backdrop-blur sm:bottom-0"
       style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
     >
       <div className="flex items-center justify-between">

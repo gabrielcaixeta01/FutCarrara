@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import { MobileNav } from '@/components/ui/MobileNav';
 
 export const metadata: Metadata = {
   title: 'Fut Carrara',
@@ -17,7 +18,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className="min-h-dvh">{children}</body>
+      <body className="min-h-dvh">
+        {children}
+        <MobileNav />
+      </body>
     </html>
   );
 }
