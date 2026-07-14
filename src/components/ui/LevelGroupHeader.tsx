@@ -31,8 +31,11 @@ export function LevelGroupHeader({ label, count, selection }: Props) {
           {selection.state === 'partial' && <Minus className="size-3.5" strokeWidth={3} />}
         </span>
       )}
-      <span className="font-semibold text-slate-100">{label}</span>
-      <span className="text-sm text-slate-400">
+      <span className="font-display text-sm uppercase tracking-widest text-ink">
+        {label}
+      </span>
+      <span className="h-px flex-1 bg-line" />
+      <span className="text-xs font-medium text-ink-soft">
         {count} {count === 1 ? 'jogador' : 'jogadores'}
       </span>
     </>

@@ -1,14 +1,28 @@
 import type { Metadata, Viewport } from 'next';
+import { Anton, Manrope } from 'next/font/google';
 import './globals.css';
 import { MobileNav } from '@/components/ui/MobileNav';
 
+const anton = Anton({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-anton',
+  display: 'swap',
+});
+
+const manrope = Manrope({
+  subsets: ['latin'],
+  variable: '--font-manrope',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
   title: 'Fut Carrara',
-  description: 'Sorteio de times equilibrados para o futebol do grupo.',
+  description: 'Marque quem chegou e tire times equilibrados em segundos.',
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0d1f17',
+  themeColor: '#0b1a12',
 };
 
 export default function RootLayout({
@@ -17,8 +31,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR">
-      <body className="min-h-dvh pb-[calc(7rem+env(safe-area-inset-bottom))]">
+    <html lang="pt-BR" className={`${anton.variable} ${manrope.variable}`}>
+      <body className="min-h-dvh pb-[calc(7rem+env(safe-area-inset-bottom))] font-body">
         {children}
         <MobileNav />
       </body>

@@ -1,13 +1,14 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Search, Users } from 'lucide-react';
+import { Users } from 'lucide-react';
 import type { Player } from '@/types';
 import { useGroup } from '@/hooks/useGroup';
 import { LEVELS_DESC, levelName, levelOf, type Level } from '@/lib/levels';
 import { PlayerRow } from '@/components/elenco/PlayerRow';
 import { Filters, type StatusFilter } from '@/components/elenco/Filters';
 import { LevelGroupHeader } from '@/components/ui/LevelGroupHeader';
+import { SearchField } from '@/components/ui/SearchField';
 
 /** Normaliza pra busca: sem acento, minúsculo. "José" casa com "jose". */
 function norm(s: string): string {
@@ -91,30 +92,20 @@ export default function ElencoPage() {
 
   return (
     <main className="mx-auto min-h-dvh max-w-md pb-28 sm:pb-16">
-      <header className="sticky top-0 z-10 space-y-3 border-b border-line bg-pitch/95 px-4 pb-3 pt-4 backdrop-blur">
-        <div className="flex items-center gap-3">
-          <h1 className="flex-1 text-xl font-bold tracking-tight text-grass-soft">
+      <header className="sticky top-0 z-20 space-y-4 border-b border-line/70 bg-pitch/85 px-4 pb-4 pt-6 backdrop-blur-xl">
+        <div className="flex items-end justify-between gap-3">
+          <h1 className="font-display text-4xl uppercase leading-none tracking-tight text-ink">
             Elenco
           </h1>
           {!loading && players.length > 0 && (
-            <span className="text-sm text-slate-400">
-              <span className="font-semibold text-slate-100">{activeCount}</span>{' '}
-              ativos de {players.length}
+            <span className="rounded-full border border-line bg-pitch-soft px-3 py-1 text-xs font-medium text-ink-soft">
+              <span className="font-bold text-grass-soft">{activeCount}</span> de{' '}
+              {players.length}
             </span>
           )}
         </div>
 
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-slate-500" />
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar por nome"
-            aria-label="Buscar jogador por nome"
-            className="h-12 w-full rounded-xl border border-line bg-pitch-soft pl-10 pr-4 text-base text-slate-100 placeholder:text-slate-500 focus:border-grass focus:outline-none focus-visible:ring-2 focus-visible:ring-grass"
-          />
-        </div>
+        <SearchField value={query} onChange={setQuery} />
       </header>
 
       {!loading && players.length > 0 && (

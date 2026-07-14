@@ -132,15 +132,15 @@ export default function ResultadoPage() {
 
   return (
     <main className="mx-auto min-h-dvh max-w-md px-4 pb-28 sm:pb-16">
-      <header className="flex items-center gap-3 border-b border-line pb-3 pt-4">
-        <h1 className="flex-1 text-xl font-bold tracking-tight text-grass-soft">
+      <header className="flex items-end justify-between gap-3 border-b border-line/70 pb-4 pt-6">
+        <h1 className="font-display text-4xl uppercase leading-none tracking-tight text-ink">
           Resultado
         </h1>
         {result && (
           <button
             type="button"
             onClick={() => setShowLevels((v) => !v)}
-            className="flex items-center gap-1.5 text-sm text-slate-400 transition-colors hover:text-slate-100"
+            className="flex items-center gap-1.5 rounded-full border border-line bg-pitch-soft px-3 py-1.5 text-xs font-semibold text-ink-soft transition-colors hover:text-ink"
           >
             {showLevels ? (
               <EyeOff className="size-4" />

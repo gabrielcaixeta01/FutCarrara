@@ -1,45 +1,100 @@
 import Link from 'next/link';
-import { Users, Shuffle } from 'lucide-react';
+import { Users, Shuffle, ChevronRight, type LucideIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function HomePage() {
   return (
-    <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-8 px-6 py-12">
-      <header className="space-y-2">
-        <h1 className="text-4xl font-bold tracking-tight text-grass-soft">
-          Fut Carrara
+    <main className="relative mx-auto flex min-h-dvh max-w-md flex-col px-6 pt-20">
+      {/* Assinatura: risca do meio-campo + círculo central, bem sutil */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-88 overflow-hidden opacity-[0.13]"
+      >
+        <svg
+          viewBox="0 0 400 400"
+          className="absolute left-1/2 -top-28 w-[135%] -translate-x-1/2 text-grass"
+        >
+          <circle cx="200" cy="200" r="118" fill="none" stroke="currentColor" strokeWidth="2" />
+          <circle cx="200" cy="200" r="4" fill="currentColor" />
+          <line x1="0" y1="200" x2="400" y2="200" stroke="currentColor" strokeWidth="2" />
+        </svg>
+      </div>
+
+      <header className="space-y-4">
+        <p className="text-xs font-bold uppercase tracking-[0.28em] text-grass-soft">
+          Pelada do grupo
+        </p>
+        <h1 className="font-display text-[4.25rem] uppercase leading-[0.82] tracking-tight text-ink">
+          Fut
+          <br />
+          Carrara
         </h1>
-        <p className="text-sm text-slate-400">
-          Marque quem chegou e sorteie times equilibrados em segundos.
+        <p className="max-w-xs text-sm text-ink-soft">
+          Marque quem chegou e tire times equilibrados em segundos.
         </p>
       </header>
 
-      <nav className="grid gap-3">
-        <Link
-          href="/elenco"
-          className="flex items-center gap-4 rounded-2xl border border-line bg-pitch-soft px-5 py-4 transition-colors hover:border-grass"
-        >
-          <Users className="size-6 shrink-0 text-grass-soft" />
-          <span className="flex flex-col">
-            <span className="font-semibold">Elenco</span>
-            <span className="text-sm text-slate-400">
-              Cadastre e ajuste o nível dos jogadores.
-            </span>
-          </span>
-        </Link>
-
-        <Link
+      <nav className="mt-12 space-y-3">
+        <HomeCard
           href="/sorteio"
-          className="flex items-center gap-4 rounded-2xl border border-line bg-pitch-soft px-5 py-4 transition-colors hover:border-grass"
-        >
-          <Shuffle className="size-6 shrink-0 text-grass-soft" />
-          <span className="flex flex-col">
-            <span className="font-semibold">Sorteio</span>
-            <span className="text-sm text-slate-400">
-              Confirme os presentes e monte os times de hoje.
-            </span>
-          </span>
-        </Link>
+          icon={Shuffle}
+          title="Sortear times"
+          desc="Escolha os presentes e monte os times."
+          accent
+        />
+        <HomeCard
+          href="/elenco"
+          icon={Users}
+          title="Elenco"
+          desc="Veja o grupo e os níveis."
+        />
       </nav>
+
+      <p className="mt-auto pb-10 pt-8 text-center text-xs text-ink-soft/70">
+        Times equilibrados, sem discussão.
+      </p>
     </main>
+  );
+}
+
+function HomeCard({
+  href,
+  icon: Icon,
+  title,
+  desc,
+  accent,
+}: {
+  href: string;
+  icon: LucideIcon;
+  title: string;
+  desc: string;
+  accent?: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        'group flex items-center gap-4 rounded-2xl border p-5 transition-all active:scale-[0.99]',
+        accent
+          ? 'border-grass/40 bg-grass/10 hover:border-grass'
+          : 'border-line bg-pitch-soft hover:border-grass/50',
+      )}
+    >
+      <span
+        className={cn(
+          'flex size-12 shrink-0 items-center justify-center rounded-xl',
+          accent ? 'bg-grass text-pitch' : 'bg-pitch-raised text-grass-soft',
+        )}
+      >
+        <Icon className="size-6" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block font-display text-lg uppercase tracking-wide text-ink">
+          {title}
+        </span>
+        <span className="block text-sm text-ink-soft">{desc}</span>
+      </span>
+      <ChevronRight className="size-5 shrink-0 text-ink-soft transition-transform group-hover:translate-x-0.5" />
+    </Link>
   );
 }

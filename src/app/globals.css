@@ -1,11 +1,26 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-pitch: #0d1f17;
-  --color-pitch-soft: #14291f;
-  --color-line: #1f3a2c;
+  /* Campo em camadas — do gramado escuro à superfície levantada */
+  --color-pitch: #0b1a12;
+  --color-pitch-soft: #11251b;
+  --color-pitch-raised: #18321f;
+  --color-line: #21402f;
+
+  /* Grama — o acento */
   --color-grass: #22c55e;
   --color-grass-soft: #4ade80;
+  --color-grass-deep: #15803d;
+
+  /* Refletor (usar com muita parcimônia) */
+  --color-flood: #fbe38a;
+
+  /* Texto tingido de campo, não slate puro */
+  --color-ink: #eaf2ec;
+  --color-ink-soft: #8ea79a;
+
+  --font-display: var(--font-anton), 'Arial Narrow', sans-serif;
+  --font-body: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
@@ -13,7 +28,29 @@
 }
 
 body {
+  min-height: 100dvh;
   background-color: var(--color-pitch);
-  color: #f8fafc;
+  /* Refletor: brilho de grama sutil no topo, some ao rolar */
+  background-image: radial-gradient(
+    140% 70% at 50% -18%,
+    color-mix(in oklab, var(--color-grass) 15%, transparent),
+    transparent 55%
+  );
+  color: var(--color-ink);
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-grass) 35%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

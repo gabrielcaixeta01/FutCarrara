@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Search } from 'lucide-react';
 import type { Draw, DrawPlayer, Format, Player, Skill } from '@/types';
 import { useGroup } from '@/hooks/useGroup';
 import { drawTeams, validFormats } from '@/lib/balance';
@@ -13,6 +12,7 @@ import { isHalf, levelLabel } from '@/lib/levels';
 import { SKILL_VALUES } from '@/types';
 import { PlayerTile } from '@/components/sorteio/PlayerTile';
 import { LevelGroupHeader } from '@/components/ui/LevelGroupHeader';
+import { SearchField } from '@/components/ui/SearchField';
 import { GuestAdder } from '@/components/sorteio/GuestAdder';
 import { GuestCard } from '@/components/sorteio/GuestCard';
 import { SortearFooter } from '@/components/sorteio/SortearFooter';
@@ -170,24 +170,19 @@ export default function SorteioPage() {
 
   return (
     <main className="mx-auto min-h-dvh max-w-md pb-44 sm:pb-16">
-      <header className="sticky top-0 z-10 space-y-3 border-b border-line bg-pitch/95 px-4 pb-3 pt-4 backdrop-blur">
-        <div className="flex items-center gap-3">
-          <h1 className="flex-1 text-xl font-bold tracking-tight text-grass-soft">
+      <header className="sticky top-0 z-20 space-y-4 border-b border-line/70 bg-pitch/85 px-4 pb-4 pt-6 backdrop-blur-xl">
+        <div className="flex items-end justify-between gap-3">
+          <h1 className="font-display text-4xl uppercase leading-none tracking-tight text-ink">
             Sorteio
           </h1>
+          {count > 0 && (
+            <span className="rounded-full border border-line bg-pitch-soft px-3 py-1 text-xs font-medium text-ink-soft">
+              <span className="font-bold text-grass-soft">{count}</span> na lista
+            </span>
+          )}
         </div>
 
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-slate-500" />
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar por nome"
-            aria-label="Buscar jogador por nome"
-            className="h-12 w-full rounded-xl border border-line bg-pitch-soft pl-10 pr-4 text-base text-slate-100 placeholder:text-slate-500 focus:border-grass focus:outline-none focus-visible:ring-2 focus-visible:ring-grass"
-          />
-        </div>
+        <SearchField value={query} onChange={setQuery} />
       </header>
 
       <div className="space-y-4 px-4 pt-4">
