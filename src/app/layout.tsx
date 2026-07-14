@@ -19,6 +19,15 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: 'Fut Carrara',
   description: 'Marque quem chegou e tire times equilibrados em segundos.',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Fut Carrara',
+  },
+  icons: {
+    apple: '/apple-touch-icon.png',
+  },
 };
 
 export const viewport: Viewport = {
