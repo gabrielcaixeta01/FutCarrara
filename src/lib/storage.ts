@@ -67,7 +67,7 @@ const DEFAULT_PLAYERS: Array<{ name: string; skill: Skill; active: boolean }> = 
   { name: 'Dan', skill: 2, active: true },
   { name: 'Carrara Irmão', skill: 2, active: false },
   { name: 'Lucas Aquino', skill: 1.5, active: true },
-  { name: 'Vitor Mello', skill: 1, active: false },
+  { name: 'Vitor Mello', skill: 1, active: true },
   { name: 'Rafael Aquino', skill: 1, active: true },
   { name: 'Paulo Bluetooth', skill: 1, active: true },
   { name: 'Enzo Pompeu', skill: 0, active: false },

@@ -6,7 +6,7 @@ export function HalfMark({ className }: { className?: string }) {
     <span
       aria-label="meio nível acima"
       title="meio nível acima"
-      className={cn('text-slate-400', className)}
+      className={cn('text-grass-soft', className)}
     >
       ▲
     </span>

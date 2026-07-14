@@ -1,16 +1,13 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
-import Link from 'next/link';
+import { useMemo, useState } from 'react';
 import { Search, Users } from 'lucide-react';
-import type { Player, Skill } from '@/types';
+import type { Player } from '@/types';
 import { useGroup } from '@/hooks/useGroup';
 import { LEVELS_DESC, levelName, levelOf, type Level } from '@/lib/levels';
-import { AddPlayerForm } from '@/components/elenco/AddPlayerForm';
 import { PlayerRow } from '@/components/elenco/PlayerRow';
 import { Filters, type StatusFilter } from '@/components/elenco/Filters';
 import { LevelGroupHeader } from '@/components/ui/LevelGroupHeader';
-import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 /** Normaliza pra busca: sem acento, minúsculo. "José" casa com "jose". */
 function norm(s: string): string {
@@ -32,20 +29,11 @@ const byActiveThenSkillThenName = (a: Player, b: Player) =>
   a.name.localeCompare(b.name, 'pt-BR');
 
 export default function ElencoPage() {
-  const {
-    players,
-    addPlayer,
-    updatePlayer,
-    removePlayer,
-    toggleActive,
-    loading,
-  } = useGroup();
+  const { players, loading } = useGroup();
 
   const [query, setQuery] = useState('');
   const [levels, setLevels] = useState<Set<Level>>(new Set());
   const [status, setStatus] = useState<StatusFilter>('active');
-  const [pendingRemoval, setPendingRemoval] = useState<Player | null>(null);
-  const nameRef = useRef<HTMLInputElement>(null);
 
   const activeCount = players.filter((p) => p.active).length;
   const searching = query.trim() !== '';
@@ -101,12 +89,6 @@ export default function ElencoPage() {
     setStatus('active');
   }
 
-  const rowHandlers = (p: Player) => ({
-    onSkill: (skill: Skill) => updatePlayer(p.id, { skill }),
-    onToggle: () => toggleActive(p.id),
-    onRemove: () => setPendingRemoval(p),
-  });
-
   return (
     <main className="mx-auto min-h-dvh max-w-md pb-28 sm:pb-16">
       <header className="sticky top-0 z-10 space-y-3 border-b border-line bg-pitch/95 px-4 pb-3 pt-4 backdrop-blur">
@@ -135,10 +117,6 @@ export default function ElencoPage() {
         </div>
       </header>
 
-      <div className="px-4 pt-4">
-        <AddPlayerForm onAdd={addPlayer} nameRef={nameRef} />
-      </div>
-
       {!loading && players.length > 0 && (
         <div className="px-4 pt-4">
           <Filters
@@ -164,16 +142,9 @@ export default function ElencoPage() {
             <div className="space-y-1">
               <p className="font-medium text-slate-200">Elenco vazio</p>
               <p className="text-sm text-slate-500">
-                Cadastre o primeiro jogador para começar a montar os times.
+                Cadastre jogadores pelo código e volte aqui para visualizar.
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => nameRef.current?.focus()}
-              className="h-11 rounded-xl bg-grass px-5 font-semibold text-pitch transition-colors hover:bg-grass-soft"
-            >
-              Adicionar jogador
-            </button>
           </div>
         ) : filtered.length === 0 ? (
           <p className="py-12 text-center text-sm text-slate-500">
@@ -184,7 +155,7 @@ export default function ElencoPage() {
         ) : searching ? (
           <ul className="space-y-2">
             {flat.map((p) => (
-              <PlayerRow key={p.id} player={p} {...rowHandlers(p)} />
+              <PlayerRow key={p.id} player={p} />
             ))}
           </ul>
         ) : (
@@ -197,7 +168,7 @@ export default function ElencoPage() {
                 />
                 <ul className="space-y-2">
                   {g.players.map((p) => (
-                    <PlayerRow key={p.id} player={p} {...rowHandlers(p)} />
+                    <PlayerRow key={p.id} player={p} />
                   ))}
                 </ul>
               </div>
@@ -205,22 +176,6 @@ export default function ElencoPage() {
           </div>
         )}
       </div>
-
-      <ConfirmDialog
-        open={pendingRemoval !== null}
-        title="Remover jogador"
-        message={
-          pendingRemoval
-            ? `Remover ${pendingRemoval.name} do elenco? Essa ação não pode ser desfeita.`
-            : ''
-        }
-        confirmLabel="Remover"
-        onConfirm={() => {
-          if (pendingRemoval) removePlayer(pendingRemoval.id);
-          setPendingRemoval(null);
-        }}
-        onCancel={() => setPendingRemoval(null)}
-      />
     </main>
   );
 }
