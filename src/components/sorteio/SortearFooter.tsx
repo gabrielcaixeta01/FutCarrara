@@ -35,11 +35,8 @@ interface Props {
 
 /** Barra fixa: contador + formatos exatos (ou aviso quando nada fecha). */
 export function SortearFooter({ count, formats, onPick, onClear }: Props) {
-  return (
-    <div
-      className="fixed inset-x-0 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-20 mx-auto max-w-md space-y-3 border-t border-line bg-pitch/95 px-4 pt-3 backdrop-blur"
-      style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
-    >
+  const content = (
+    <>
       <div className="flex items-center justify-between">
         <span className="text-base">
           <span className="font-bold text-grass-soft">{count}</span>{' '}
@@ -76,6 +73,23 @@ export function SortearFooter({ count, formats, onPick, onClear }: Props) {
             : suggestion(count)}
         </p>
       )}
+    </>
+  );
+
+  if (count === 0) {
+    return (
+      <div className="mt-4 rounded-2xl border border-line bg-pitch-soft px-4 py-3">
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="fixed inset-x-0 bottom-[calc(7rem+env(safe-area-inset-bottom))] z-20 mx-auto max-w-md space-y-3 border-t border-line bg-pitch/95 px-4 pt-3 backdrop-blur"
+      style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
+    >
+      {content}
     </div>
   );
 }

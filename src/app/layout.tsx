@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className="min-h-dvh">
+      <body className="min-h-dvh pb-[calc(7rem+env(safe-area-inset-bottom))]">
         {children}
         <MobileNav />
       </body>
