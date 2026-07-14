@@ -4,11 +4,10 @@ import { X } from 'lucide-react';
 import { LEVELS_DESC, levelName, type Level } from '@/lib/levels';
 import { cn } from '@/lib/utils';
 
-export type StatusFilter = 'all' | 'active' | 'inactive';
+export type StatusFilter = 'active' | 'inactive';
 
 const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
-  { value: 'all', label: 'Todos' },
-  { value: 'active', label: 'Ativos' },
+  { value: 'active', label: 'Em atividade' },
   { value: 'inactive', label: 'Aposentados' },
 ];
 

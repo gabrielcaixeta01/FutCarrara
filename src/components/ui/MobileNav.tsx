@@ -16,7 +16,7 @@ export function MobileNav() {
   const pathname = usePathname();
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 sm:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-30">
       <div className="mx-auto max-w-md px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         <nav className="grid grid-cols-4 overflow-hidden rounded-t-3xl border border-b-0 border-line bg-pitch/95 shadow-[0_-12px_32px_rgba(0,0,0,0.35)] backdrop-blur">
           {ITEMS.map(({ href, label, icon: Icon }) => {

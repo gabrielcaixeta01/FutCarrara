@@ -156,12 +156,12 @@ export default function ResultadoPage() {
         <p className="py-16 text-center text-sm text-slate-500">Carregando…</p>
       ) : !result ? (
         <div className="flex flex-col items-center gap-4 py-16 text-center">
-          <p className="text-slate-400">Nenhum sorteio para mostrar.</p>
+          <p className="text-slate-400">Nenhum sorteio ainda.</p>
           <Link
             href="/sorteio"
             className="h-11 rounded-xl bg-grass px-5 font-semibold leading-11 text-pitch hover:bg-grass-soft"
           >
-            Fazer um sorteio
+            Tirar times
           </Link>
         </div>
       ) : (

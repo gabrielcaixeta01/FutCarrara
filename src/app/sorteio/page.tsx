@@ -1,13 +1,13 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Search } from 'lucide-react';
 import type { Draw, DrawPlayer, Format, Player, Skill } from '@/types';
 import { useGroup } from '@/hooks/useGroup';
 import { drawTeams, validFormats } from '@/lib/balance';
-import { saveDraw, saveLastResult } from '@/lib/storage';
+import { clearLastResult, saveDraw, saveLastResult } from '@/lib/storage';
 import { uid } from '@/lib/utils';
 import { isHalf, levelLabel } from '@/lib/levels';
 import { SKILL_VALUES } from '@/types';
@@ -32,6 +32,10 @@ export default function SorteioPage() {
   const [query, setQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [guests, setGuests] = useState<Player[]>([]);
+
+  useEffect(() => {
+    clearLastResult();
+  }, []);
 
   const activePlayers = useMemo(
     () => players.filter((p) => p.active),

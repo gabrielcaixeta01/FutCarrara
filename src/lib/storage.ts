@@ -304,6 +304,16 @@ export function loadLastResult(): DrawResult | null {
   }
 }
 
+export function clearLastResult(): void {
+  const store = ss();
+  if (!store) return;
+  try {
+    store.removeItem(RESULT_KEY);
+  } catch {
+    // best-effort.
+  }
+}
+
 // --- Backup -----------------------------------------------------------------
 
 /** Serializa tudo pra download. Backup contra perda de cache. */

@@ -43,21 +43,20 @@ export default function ElencoPage() {
 
   const [query, setQuery] = useState('');
   const [levels, setLevels] = useState<Set<Level>>(new Set());
-  const [status, setStatus] = useState<StatusFilter>('all');
+  const [status, setStatus] = useState<StatusFilter>('active');
   const [pendingRemoval, setPendingRemoval] = useState<Player | null>(null);
   const nameRef = useRef<HTMLInputElement>(null);
 
   const activeCount = players.filter((p) => p.active).length;
   const searching = query.trim() !== '';
-  const anyFilter = levels.size > 0 || status !== 'all';
+  const anyFilter = levels.size > 0 || status !== 'active';
 
   // Nome + status (sem nível): base para a contagem dos chips.
   const base = useMemo(() => {
     const q = norm(query);
     return players.filter((p) => {
       const okName = q ? norm(p.name).includes(q) : true;
-      const okStatus =
-        status === 'all' ? true : status === 'active' ? p.active : !p.active;
+      const okStatus = status === 'active' ? p.active : !p.active;
       return okName && okStatus;
     });
   }, [players, query, status]);
@@ -99,7 +98,7 @@ export default function ElencoPage() {
 
   function clearFilters() {
     setLevels(new Set());
-    setStatus('all');
+    setStatus('active');
   }
 
   const rowHandlers = (p: Player) => ({
