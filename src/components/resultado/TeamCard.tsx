@@ -1,6 +1,7 @@
 'use client';
 
 import type { Team } from '@/types';
+import { levelName } from '@/lib/levels';
 import { cn } from '@/lib/utils';
 import { teamColor } from './teamColors';
 
@@ -28,11 +29,6 @@ export function TeamCard({ index, team, isStarter, showLevels }: Props) {
             </span>
           )}
         </div>
-        {showLevels && (
-          <span className="text-xs tabular-nums text-slate-400">
-            Soma {team.total} · Média {team.avg}
-          </span>
-        )}
       </header>
 
       <ul className="space-y-1.5">
@@ -50,8 +46,8 @@ export function TeamCard({ index, team, isStarter, showLevels }: Props) {
               )}
             </span>
             {showLevels && (
-              <span className="shrink-0 tabular-nums text-sm font-semibold text-slate-400">
-                {p.skill}
+              <span className="shrink-0 text-sm font-medium text-slate-400">
+                {levelName(p.skill)}
               </span>
             )}
           </li>

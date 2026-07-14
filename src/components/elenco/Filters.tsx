@@ -2,7 +2,7 @@
 
 import { X } from 'lucide-react';
 import type { Skill } from '@/types';
-import { LEVEL_NAMES, SKILL_ORDER } from '@/lib/levels';
+import { LEVELS_DESC, levelName } from '@/lib/levels';
 import { cn } from '@/lib/utils';
 
 export type StatusFilter = 'all' | 'active' | 'inactive';
@@ -35,8 +35,12 @@ export function Filters({
 }: Props) {
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap gap-2">
-        {SKILL_ORDER.map((skill) => {
+      <div
+        role="group"
+        aria-label="Filtrar por nível"
+        className="flex flex-wrap gap-2"
+      >
+        {LEVELS_DESC.map((skill) => {
           const count = levelCounts[skill];
           const selected = selectedLevels.has(skill);
           return (
@@ -53,7 +57,7 @@ export function Filters({
                   : 'border-line bg-pitch-soft text-slate-300 hover:border-slate-600',
               )}
             >
-              {LEVEL_NAMES[skill]}
+              {levelName(skill)}
               <span
                 className={cn(
                   'tabular-nums text-xs',

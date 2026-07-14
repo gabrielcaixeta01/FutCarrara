@@ -23,7 +23,6 @@ const RESULT_KEY = 'futcarrara:lastResult';
 const SCHEMA_VERSION = 1;
 
 const DEFAULT_GROUP_NAME = 'Futebol Carrara';
-const DEFAULT_SKILL: Skill = 3;
 
 const DEFAULT_PLAYERS: Array<{ name: string; skill: Skill; active: boolean }> = [
   { name: 'Carrara', skill: 5, active: true },
@@ -34,6 +33,7 @@ const DEFAULT_PLAYERS: Array<{ name: string; skill: Skill; active: boolean }> = 
   { name: 'Luis H', skill: 5, active: true },
   { name: 'Diego', skill: 5, active: true },
   { name: 'Érico', skill: 5, active: true },
+  { name: 'Hansen', skill: 5, active: false },
   { name: 'Caixeta', skill: 4, active: true },
   { name: 'Cauê', skill: 4, active: true },
   { name: 'Léo', skill: 4, active: true },
@@ -44,24 +44,33 @@ const DEFAULT_PLAYERS: Array<{ name: string; skill: Skill; active: boolean }> = 
   { name: 'Lyra', skill: 4, active: true },
   { name: 'Joao M', skill: 4, active: true },
   { name: 'Saad', skill: 4, active: true },
+  { name: 'PH', skill: 4, active: true },
+  { name: 'Carone', skill: 3, active: true },
+  { name: 'Paulo Ricco', skill: 3, active: true },
   { name: 'Guilherme Galo', skill: 3, active: true },
   { name: 'Pedro Andrade', skill: 3, active: true },
   { name: 'Portugal', skill: 3, active: true },
+  { name: 'Titcho', skill: 3, active: true },
   { name: 'Dp', skill: 3, active: true },
   { name: 'Tom', skill: 3, active: true },
-  { name: 'Max', skill: 3, active: true },
   { name: 'GB', skill: 3, active: true },
   { name: 'Adriano', skill: 3, active: true },
+  { name: 'Serra', skill: 3, active: true },
+  { name: 'Nicholas', skill: 3, active: true },
   { name: 'Igor', skill: 3, active: true },
   { name: 'Trento', skill: 3, active: true },
   { name: 'Diegordo', skill: 3, active: false },
+  { name: 'Max', skill: 2, active: true },
   { name: 'Marcelo', skill: 2, active: true },
+  { name: 'Carrara Pai', skill: 2, active: false },
   { name: 'Felipe Fidalgo', skill: 2, active: true },
   { name: 'Dan', skill: 2, active: true },
   { name: 'Rafael Aquino', skill: 1, active: true },
+  { name: 'Carrara Irmão', skill: 2, active: false },
   { name: 'Lucas Aquino', skill: 1, active: true },
-  { name: 'Vitor Mello', skill: 1, active: true },
-
+  { name: 'Vitor Mello', skill: 1, active: false },
+  { name: 'Paulo Bluetooth', skill: 1, active: true },
+  { name: 'Enzo Pompeu', skill: 0, active: false },
 ];
 
 /** Acesso a localStorage tolerante a SSR e a modos onde ele lança/está off. */

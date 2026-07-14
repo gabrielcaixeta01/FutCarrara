@@ -9,7 +9,7 @@ import { useGroup } from '@/hooks/useGroup';
 import { drawTeams, validFormats } from '@/lib/balance';
 import { saveDraw, saveLastResult } from '@/lib/storage';
 import { uid } from '@/lib/utils';
-import { LEVEL_NAMES, SKILL_ORDER } from '@/lib/levels';
+import { LEVELS_DESC, levelName } from '@/lib/levels';
 import { PlayerTile } from '@/components/sorteio/PlayerTile';
 import { LevelGroupHeader } from '@/components/ui/LevelGroupHeader';
 import { GuestAdder } from '@/components/sorteio/GuestAdder';
@@ -75,7 +75,7 @@ export default function SorteioPage() {
   // Sem busca: agrupa por nível, do mais alto pro mais baixo. Grupos vazios somem.
   const groups = useMemo(
     () =>
-      SKILL_ORDER.map((skill) => ({
+      LEVELS_DESC.map((skill) => ({
         skill,
         players: activePlayers
           .filter((p) => p.skill === skill)
@@ -258,7 +258,7 @@ export default function SorteioPage() {
               return (
                 <div key={g.skill} className="space-y-2">
                   <LevelGroupHeader
-                    label={LEVEL_NAMES[g.skill]}
+                    label={levelName(g.skill)}
                     count={g.players.length}
                     selection={{
                       state,

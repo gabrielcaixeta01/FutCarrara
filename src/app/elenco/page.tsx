@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, Search, Users } from 'lucide-react';
 import type { Player, Skill } from '@/types';
 import { useGroup } from '@/hooks/useGroup';
-import { LEVEL_NAMES, SKILL_ORDER } from '@/lib/levels';
+import { LEVELS_DESC, levelName } from '@/lib/levels';
 import { AddPlayerForm } from '@/components/elenco/AddPlayerForm';
 import { PlayerRow } from '@/components/elenco/PlayerRow';
 import { Filters, type StatusFilter } from '@/components/elenco/Filters';
@@ -71,7 +71,7 @@ export default function ElencoPage() {
 
   const groups = useMemo(
     () =>
-      SKILL_ORDER.map((skill) => ({
+      LEVELS_DESC.map((skill) => ({
         skill,
         players: filtered
           .filter((p) => p.skill === skill)
@@ -192,7 +192,7 @@ export default function ElencoPage() {
             {groups.map((g) => (
               <div key={g.skill} className="space-y-2">
                 <LevelGroupHeader
-                  label={LEVEL_NAMES[g.skill]}
+                  label={levelName(g.skill)}
                   count={g.players.length}
                 />
                 <ul className="space-y-2">
