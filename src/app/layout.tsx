@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Anton, Manrope } from 'next/font/google';
 import './globals.css';
 import { MobileNav } from '@/components/ui/MobileNav';
+import { ServiceWorkerRegister } from '@/components/ui/ServiceWorkerRegister';
 
 const anton = Anton({
   weight: '400',
@@ -44,6 +45,7 @@ export default function RootLayout({
       <body className="min-h-dvh pb-[calc(7rem+env(safe-area-inset-bottom))] font-body">
         {children}
         <MobileNav />
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
