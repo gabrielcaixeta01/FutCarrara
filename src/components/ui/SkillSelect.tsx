@@ -1,33 +1,34 @@
 'use client';
 
 import { ChevronDown } from 'lucide-react';
-import type { Skill } from '@/types';
-import { LEVELS_DESC, levelName } from '@/lib/levels';
+import { SKILL_VALUES, type Skill } from '@/types';
+import { levelLabel } from '@/lib/levels';
 import { cn } from '@/lib/utils';
 
 interface Props {
   value: Skill;
   onChange: (skill: Skill) => void;
   ariaLabel: string;
+  /** Largura do wrapper. Default cabe o rótulo mais longo. */
   className?: string;
 }
 
 /**
- * Seletor de nível. As opções mostram o rótulo (Monstro…Vai pro gol);
- * o value continua sendo o número (Skill). Select nativo = picker rápido no celular.
+ * Seletor de nível. 11 opções (passo 0.5); o texto é o rótulo com modificador
+ * (ex.: "Craque ▲"), o value continua sendo o número (Skill).
  */
 export function SkillSelect({ value, onChange, ariaLabel, className }: Props) {
   return (
-    <div className={cn('relative shrink-0', className)}>
+    <div className={cn('relative', className ?? 'w-36 shrink-0')}>
       <select
         aria-label={ariaLabel}
         value={value}
         onChange={(e) => onChange(Number(e.target.value) as Skill)}
-        className="h-12 w-32 appearance-none rounded-xl border border-line bg-pitch-soft pl-3 pr-8 text-sm font-medium text-grass-soft focus:border-grass focus:outline-none focus-visible:ring-2 focus-visible:ring-grass"
+        className="h-12 w-full appearance-none rounded-xl border border-line bg-pitch-soft pl-3 pr-8 text-sm font-medium text-grass-soft focus:border-grass focus:outline-none focus-visible:ring-2 focus-visible:ring-grass"
       >
-        {LEVELS_DESC.map((s) => (
+        {SKILL_VALUES.map((s) => (
           <option key={s} value={s}>
-            {levelName(s)}
+            {levelLabel(s)}
           </option>
         ))}
       </select>

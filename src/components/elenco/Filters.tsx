@@ -1,8 +1,7 @@
 'use client';
 
 import { X } from 'lucide-react';
-import type { Skill } from '@/types';
-import { LEVELS_DESC, levelName } from '@/lib/levels';
+import { LEVELS_DESC, levelName, type Level } from '@/lib/levels';
 import { cn } from '@/lib/utils';
 
 export type StatusFilter = 'all' | 'active' | 'inactive';
@@ -10,14 +9,14 @@ export type StatusFilter = 'all' | 'active' | 'inactive';
 const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
   { value: 'all', label: 'Todos' },
   { value: 'active', label: 'Ativos' },
-  { value: 'inactive', label: 'Inativos' },
+  { value: 'inactive', label: 'Aposentados' },
 ];
 
 interface Props {
-  /** Contagem por nível dentro do contexto atual (nome + status). */
-  levelCounts: Record<Skill, number>;
-  selectedLevels: Set<Skill>;
-  onToggleLevel: (skill: Skill) => void;
+  /** Contagem por nível base dentro do contexto atual (nome + status). */
+  levelCounts: Record<Level, number>;
+  selectedLevels: Set<Level>;
+  onToggleLevel: (level: Level) => void;
   status: StatusFilter;
   onStatus: (status: StatusFilter) => void;
   anyActive: boolean;
@@ -40,14 +39,14 @@ export function Filters({
         aria-label="Filtrar por nível"
         className="flex flex-wrap gap-2"
       >
-        {LEVELS_DESC.map((skill) => {
-          const count = levelCounts[skill];
-          const selected = selectedLevels.has(skill);
+        {LEVELS_DESC.map((level) => {
+          const count = levelCounts[level];
+          const selected = selectedLevels.has(level);
           return (
             <button
-              key={skill}
+              key={level}
               type="button"
-              onClick={() => onToggleLevel(skill)}
+              onClick={() => onToggleLevel(level)}
               disabled={count === 0 && !selected}
               aria-pressed={selected}
               className={cn(
@@ -57,7 +56,7 @@ export function Filters({
                   : 'border-line bg-pitch-soft text-slate-300 hover:border-slate-600',
               )}
             >
-              {levelName(skill)}
+              {levelName(level)}
               <span
                 className={cn(
                   'tabular-nums text-xs',

@@ -1,8 +1,9 @@
 'use client';
 
 import type { Team } from '@/types';
-import { levelName } from '@/lib/levels';
+import { isHalf, levelName } from '@/lib/levels';
 import { cn } from '@/lib/utils';
+import { HalfMark } from '@/components/ui/HalfMark';
 import { teamColor } from './teamColors';
 
 interface Props {
@@ -39,6 +40,7 @@ export function TeamCard({ index, team, isStarter, showLevels }: Props) {
           >
             <span className="flex min-w-0 items-center gap-2">
               <span className="truncate">{p.name}</span>
+              {showLevels && isHalf(p.skill) && <HalfMark className="shrink-0" />}
               {p.guest && (
                 <span className="shrink-0 rounded-full bg-grass/15 px-1.5 py-0.5 text-xs text-grass-soft">
                   visitante

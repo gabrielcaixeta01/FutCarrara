@@ -2,15 +2,17 @@
 
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { HalfMark } from '@/components/ui/HalfMark';
 
 interface Props {
   name: string;
   selected: boolean;
+  half: boolean;
   onToggle: () => void;
 }
 
 /** Tile de jogador no grid de seleção. */
-export function PlayerTile({ name, selected, onToggle }: Props) {
+export function PlayerTile({ name, selected, half, onToggle }: Props) {
   return (
     <button
       type="button"
@@ -26,7 +28,10 @@ export function PlayerTile({ name, selected, onToggle }: Props) {
       {selected && (
         <Check className="absolute right-1.5 top-1.5 size-4 text-grass" />
       )}
-      <span className="line-clamp-2 wrap-break-word">{name}</span>
+      <span className="line-clamp-2 wrap-break-word">
+        {name}
+        {half && <HalfMark className="ml-1" />}
+      </span>
     </button>
   );
 }

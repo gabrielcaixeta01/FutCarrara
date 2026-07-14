@@ -113,7 +113,14 @@ function isRecord(v: unknown): v is Record<string, unknown> {
 }
 
 function isSkill(v: unknown): v is Skill {
-  return typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= 5;
+  // Número entre 0 e 5, em passos de 0.5. Rejeita 3.7, 6, NaN, string.
+  return (
+    typeof v === 'number' &&
+    Number.isFinite(v) &&
+    v >= 0 &&
+    v <= 5 &&
+    v * 2 === Math.trunc(v * 2)
+  );
 }
 
 function isPlayer(v: unknown): v is Player {

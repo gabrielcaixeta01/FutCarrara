@@ -2,7 +2,9 @@
 
 import { X } from 'lucide-react';
 import type { Player, Skill } from '@/types';
+import { isHalf } from '@/lib/levels';
 import { SkillSelect } from '@/components/ui/SkillSelect';
+import { HalfMark } from '@/components/ui/HalfMark';
 
 interface Props {
   guest: Player;
@@ -19,6 +21,7 @@ export function GuestCard({ guest, onSkill, onRemove }: Props) {
           <span className="truncate font-medium text-slate-100">
             {guest.name}
           </span>
+          {isHalf(guest.skill) && <HalfMark />}
           <span className="rounded-full bg-grass/20 px-2 py-0.5 text-xs font-medium text-grass-soft">
             visitante
           </span>
