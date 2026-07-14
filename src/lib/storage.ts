@@ -54,7 +54,6 @@ const DEFAULT_PLAYERS: Array<{ name: string; skill: Skill; active: boolean }> = 
   { name: 'Adriano', skill: 3, active: true },
   { name: 'Igor', skill: 3, active: true },
   { name: 'Trento', skill: 3, active: true },
-  { name: 'Luis H', skill: 5, active: true },
   { name: 'Diegordo', skill: 3, active: false },
   { name: 'Marcelo', skill: 2, active: true },
   { name: 'Felipe Fidalgo', skill: 2, active: true },
@@ -62,8 +61,6 @@ const DEFAULT_PLAYERS: Array<{ name: string; skill: Skill; active: boolean }> = 
   { name: 'Rafael Aquino', skill: 1, active: true },
   { name: 'Lucas Aquino', skill: 1, active: true },
   { name: 'Vitor Mello', skill: 1, active: true },
-  { name: 'Érico', skill: 5, active: true },
-  { name: 'Joao M', skill: 4, active: true },
 
 ];
 
