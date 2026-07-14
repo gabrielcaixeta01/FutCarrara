@@ -131,7 +131,7 @@ export default function ResultadoPage() {
   }
 
   return (
-    <main className="mx-auto min-h-dvh max-w-2xl px-4 pb-28 sm:pb-16">
+    <main className="mx-auto min-h-dvh max-w-md px-4 pb-28 sm:pb-16">
       <header className="flex items-center gap-3 border-b border-line pb-3 pt-4">
         <h1 className="flex-1 text-xl font-bold tracking-tight text-grass-soft">
           Resultado
