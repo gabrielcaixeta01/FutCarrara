@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, Search, Users } from 'lucide-react';
 import type { Player, Skill } from '@/types';
 import { useGroup } from '@/hooks/useGroup';
-import { LEVELS_DESC, levelName } from '@/lib/levels';
+import { LEVELS_DESC, levelName, levelOf, type Level } from '@/lib/levels';
 import { AddPlayerForm } from '@/components/elenco/AddPlayerForm';
 import { PlayerRow } from '@/components/elenco/PlayerRow';
 import { Filters, type StatusFilter } from '@/components/elenco/Filters';
@@ -25,6 +25,12 @@ function norm(s: string): string {
 const byActiveThenName = (a: Player, b: Player) =>
   Number(b.active) - Number(a.active) || a.name.localeCompare(b.name, 'pt-BR');
 
+/** Dentro do grupo: ativos primeiro, skill desc, depois nome. */
+const byActiveThenSkillThenName = (a: Player, b: Player) =>
+  Number(b.active) - Number(a.active) ||
+  b.skill - a.skill ||
+  a.name.localeCompare(b.name, 'pt-BR');
+
 export default function ElencoPage() {
   const {
     players,
@@ -36,7 +42,7 @@ export default function ElencoPage() {
   } = useGroup();
 
   const [query, setQuery] = useState('');
-  const [levels, setLevels] = useState<Set<Skill>>(new Set());
+  const [levels, setLevels] = useState<Set<Level>>(new Set());
   const [status, setStatus] = useState<StatusFilter>('all');
   const [pendingRemoval, setPendingRemoval] = useState<Player | null>(null);
   const nameRef = useRef<HTMLInputElement>(null);
@@ -56,35 +62,37 @@ export default function ElencoPage() {
     });
   }, [players, query, status]);
 
+  // Conta por nível base (4.0 e 4.5 caem juntos em "Craque").
   const levelCounts = useMemo(() => {
-    const counts: Record<Skill, number> = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-    for (const p of base) counts[p.skill]++;
+    const counts: Record<Level, number> = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    for (const p of base) counts[levelOf(p.skill)]++;
     return counts;
   }, [base]);
 
   const filtered = useMemo(
-    () => (levels.size ? base.filter((p) => levels.has(p.skill)) : base),
+    () => (levels.size ? base.filter((p) => levels.has(levelOf(p.skill))) : base),
     [base, levels],
   );
 
   const flat = useMemo(() => [...filtered].sort(byActiveThenName), [filtered]);
 
+  // Seis grupos por nível base; dentro, skill desc depois nome.
   const groups = useMemo(
     () =>
-      LEVELS_DESC.map((skill) => ({
-        skill,
+      LEVELS_DESC.map((level) => ({
+        level,
         players: filtered
-          .filter((p) => p.skill === skill)
-          .sort(byActiveThenName),
+          .filter((p) => levelOf(p.skill) === level)
+          .sort(byActiveThenSkillThenName),
       })).filter((g) => g.players.length > 0),
     [filtered],
   );
 
-  function toggleLevel(skill: Skill) {
+  function toggleLevel(level: Level) {
     setLevels((prev) => {
       const next = new Set(prev);
-      if (next.has(skill)) next.delete(skill);
-      else next.add(skill);
+      if (next.has(level)) next.delete(level);
+      else next.add(level);
       return next;
     });
   }
@@ -190,9 +198,9 @@ export default function ElencoPage() {
         ) : (
           <div className="space-y-5">
             {groups.map((g) => (
-              <div key={g.skill} className="space-y-2">
+              <div key={g.level} className="space-y-2">
                 <LevelGroupHeader
-                  label={levelName(g.skill)}
+                  label={levelName(g.level)}
                   count={g.players.length}
                 />
                 <ul className="space-y-2">
