@@ -3,10 +3,13 @@
 import { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Search, Users } from 'lucide-react';
-import type { Player } from '@/types';
+import type { Player, Skill } from '@/types';
 import { useGroup } from '@/hooks/useGroup';
+import { LEVEL_NAMES, SKILL_ORDER } from '@/lib/levels';
 import { AddPlayerForm } from '@/components/elenco/AddPlayerForm';
 import { PlayerRow } from '@/components/elenco/PlayerRow';
+import { Filters, type StatusFilter } from '@/components/elenco/Filters';
+import { LevelGroupHeader } from '@/components/ui/LevelGroupHeader';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 /** Normaliza pra busca: sem acento, minúsculo. "José" casa com "jose". */
@@ -18,6 +21,10 @@ function norm(s: string): string {
     .trim();
 }
 
+/** Ativos primeiro, depois alfabético. */
+const byActiveThenName = (a: Player, b: Player) =>
+  Number(b.active) - Number(a.active) || a.name.localeCompare(b.name, 'pt-BR');
+
 export default function ElencoPage() {
   const {
     players,
@@ -25,27 +32,73 @@ export default function ElencoPage() {
     updatePlayer,
     removePlayer,
     toggleActive,
-    refreshGroup,
     loading,
   } = useGroup();
 
   const [query, setQuery] = useState('');
+  const [levels, setLevels] = useState<Set<Skill>>(new Set());
+  const [status, setStatus] = useState<StatusFilter>('all');
   const [pendingRemoval, setPendingRemoval] = useState<Player | null>(null);
   const nameRef = useRef<HTMLInputElement>(null);
 
   const activeCount = players.filter((p) => p.active).length;
+  const searching = query.trim() !== '';
+  const anyFilter = levels.size > 0 || status !== 'all';
 
-  // Filtra por nome; ativos primeiro, alfabético dentro de cada grupo.
-  const visible = useMemo(() => {
+  // Nome + status (sem nível): base para a contagem dos chips.
+  const base = useMemo(() => {
     const q = norm(query);
-    return players
-      .filter((p) => (q ? norm(p.name).includes(q) : true))
-      .sort(
-        (a, b) =>
-          Number(b.active) - Number(a.active) ||
-          a.name.localeCompare(b.name, 'pt-BR'),
-      );
-  }, [players, query]);
+    return players.filter((p) => {
+      const okName = q ? norm(p.name).includes(q) : true;
+      const okStatus =
+        status === 'all' ? true : status === 'active' ? p.active : !p.active;
+      return okName && okStatus;
+    });
+  }, [players, query, status]);
+
+  const levelCounts = useMemo(() => {
+    const counts: Record<Skill, number> = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    for (const p of base) counts[p.skill]++;
+    return counts;
+  }, [base]);
+
+  const filtered = useMemo(
+    () => (levels.size ? base.filter((p) => levels.has(p.skill)) : base),
+    [base, levels],
+  );
+
+  const flat = useMemo(() => [...filtered].sort(byActiveThenName), [filtered]);
+
+  const groups = useMemo(
+    () =>
+      SKILL_ORDER.map((skill) => ({
+        skill,
+        players: filtered
+          .filter((p) => p.skill === skill)
+          .sort(byActiveThenName),
+      })).filter((g) => g.players.length > 0),
+    [filtered],
+  );
+
+  function toggleLevel(skill: Skill) {
+    setLevels((prev) => {
+      const next = new Set(prev);
+      if (next.has(skill)) next.delete(skill);
+      else next.add(skill);
+      return next;
+    });
+  }
+
+  function clearFilters() {
+    setLevels(new Set());
+    setStatus('all');
+  }
+
+  const rowHandlers = (p: Player) => ({
+    onSkill: (skill: Skill) => updatePlayer(p.id, { skill }),
+    onToggle: () => toggleActive(p.id),
+    onRemove: () => setPendingRemoval(p),
+  });
 
   return (
     <main className="mx-auto min-h-dvh max-w-md pb-16">
@@ -86,6 +139,20 @@ export default function ElencoPage() {
         <AddPlayerForm onAdd={addPlayer} nameRef={nameRef} />
       </div>
 
+      {!loading && players.length > 0 && (
+        <div className="px-4 pt-4">
+          <Filters
+            levelCounts={levelCounts}
+            selectedLevels={levels}
+            onToggleLevel={toggleLevel}
+            status={status}
+            onStatus={setStatus}
+            anyActive={anyFilter}
+            onClear={clearFilters}
+          />
+        </div>
+      )}
+
       <div className="px-4 pt-4">
         {loading ? (
           <p className="py-16 text-center text-sm text-slate-500">
@@ -108,22 +175,34 @@ export default function ElencoPage() {
               Adicionar jogador
             </button>
           </div>
-        ) : visible.length === 0 ? (
+        ) : filtered.length === 0 ? (
           <p className="py-12 text-center text-sm text-slate-500">
-            Ninguém com “{query.trim()}” no elenco.
+            {searching
+              ? `Ninguém com “${query.trim()}” nesses filtros.`
+              : 'Nenhum jogador com esses filtros.'}
           </p>
-        ) : (
+        ) : searching ? (
           <ul className="space-y-2">
-            {visible.map((p) => (
-              <PlayerRow
-                key={p.id}
-                player={p}
-                onSkill={(skill) => updatePlayer(p.id, { skill })}
-                onToggle={() => toggleActive(p.id)}
-                onRemove={() => setPendingRemoval(p)}
-              />
+            {flat.map((p) => (
+              <PlayerRow key={p.id} player={p} {...rowHandlers(p)} />
             ))}
           </ul>
+        ) : (
+          <div className="space-y-5">
+            {groups.map((g) => (
+              <div key={g.skill} className="space-y-2">
+                <LevelGroupHeader
+                  label={LEVEL_NAMES[g.skill]}
+                  count={g.players.length}
+                />
+                <ul className="space-y-2">
+                  {g.players.map((p) => (
+                    <PlayerRow key={p.id} player={p} {...rowHandlers(p)} />
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         )}
       </div>
 

@@ -55,7 +55,6 @@ const DEFAULT_PLAYERS: Array<{ name: string; skill: Skill; active: boolean }> = 
   { name: 'Igor', skill: 3, active: true },
   { name: 'Trento', skill: 3, active: true },
   { name: 'Luis H', skill: 5, active: true },
-  { name: 'Diego', skill: 5, active: true },
   { name: 'Diegordo', skill: 3, active: false },
   { name: 'Marcelo', skill: 2, active: true },
   { name: 'Felipe Fidalgo', skill: 2, active: true },

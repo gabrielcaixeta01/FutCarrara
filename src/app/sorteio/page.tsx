@@ -9,7 +9,9 @@ import { useGroup } from '@/hooks/useGroup';
 import { drawTeams, validFormats } from '@/lib/balance';
 import { saveDraw, saveLastResult } from '@/lib/storage';
 import { uid } from '@/lib/utils';
+import { LEVEL_NAMES, SKILL_ORDER } from '@/lib/levels';
 import { PlayerTile } from '@/components/sorteio/PlayerTile';
+import { LevelGroupHeader } from '@/components/ui/LevelGroupHeader';
 import { GuestAdder } from '@/components/sorteio/GuestAdder';
 import { GuestCard } from '@/components/sorteio/GuestCard';
 import { SortearFooter } from '@/components/sorteio/SortearFooter';
@@ -60,12 +62,27 @@ export default function SorteioPage() {
     [selectedElenco],
   );
 
+  const searching = query.trim() !== '';
+
+  // Busca ativa: lista achatada (sem headers). Ordena por nome.
   const visible = useMemo(() => {
     const q = norm(query);
     return activePlayers
       .filter((p) => (q ? norm(p.name).includes(q) : true))
       .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
   }, [activePlayers, query]);
+
+  // Sem busca: agrupa por nível, do mais alto pro mais baixo. Grupos vazios somem.
+  const groups = useMemo(
+    () =>
+      SKILL_ORDER.map((skill) => ({
+        skill,
+        players: activePlayers
+          .filter((p) => p.skill === skill)
+          .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')),
+      })).filter((g) => g.players.length > 0),
+    [activePlayers],
+  );
 
   // Só formatos que fecham exato — o admin seleciona o número certo.
   const formats = useMemo(
@@ -77,6 +94,18 @@ export default function SorteioPage() {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
+  }
+
+  function toggleGroup(groupPlayers: Player[], allSelected: boolean) {
+    const ids = groupPlayers.map((p) => p.id);
+    setSelectedIds((prev) => {
+      if (allSelected) {
+        const drop = new Set(ids);
+        return prev.filter((x) => !drop.has(x));
+      }
+      const have = new Set(prev);
+      return [...prev, ...ids.filter((id) => !have.has(id))];
+    });
   }
 
   function addGuest(name: string) {
@@ -197,20 +226,58 @@ export default function SorteioPage() {
               .
             </p>
           </div>
-        ) : visible.length === 0 ? (
-          <p className="py-12 text-center text-sm text-slate-500">
-            Ninguém com “{query.trim()}” no elenco ativo.
-          </p>
+        ) : searching ? (
+          visible.length === 0 ? (
+            <p className="py-12 text-center text-sm text-slate-500">
+              Ninguém com “{query.trim()}” no elenco ativo.
+            </p>
+          ) : (
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {visible.map((p) => (
+                <PlayerTile
+                  key={p.id}
+                  name={p.name}
+                  selected={selectedSet.has(p.id)}
+                  onToggle={() => toggle(p.id)}
+                />
+              ))}
+            </div>
+          )
         ) : (
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {visible.map((p) => (
-              <PlayerTile
-                key={p.id}
-                name={p.name}
-                selected={selectedSet.has(p.id)}
-                onToggle={() => toggle(p.id)}
-              />
-            ))}
+          <div className="space-y-5">
+            {groups.map((g) => {
+              const selInGroup = g.players.filter((p) =>
+                selectedSet.has(p.id),
+              ).length;
+              const state =
+                selInGroup === 0
+                  ? 'none'
+                  : selInGroup === g.players.length
+                    ? 'all'
+                    : 'partial';
+              return (
+                <div key={g.skill} className="space-y-2">
+                  <LevelGroupHeader
+                    label={LEVEL_NAMES[g.skill]}
+                    count={g.players.length}
+                    selection={{
+                      state,
+                      onToggleAll: () => toggleGroup(g.players, state === 'all'),
+                    }}
+                  />
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    {g.players.map((p) => (
+                      <PlayerTile
+                        key={p.id}
+                        name={p.name}
+                        selected={selectedSet.has(p.id)}
+                        onToggle={() => toggle(p.id)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
