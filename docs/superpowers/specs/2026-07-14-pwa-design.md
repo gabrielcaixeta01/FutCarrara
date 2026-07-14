@@ -50,7 +50,10 @@ em runtime). Gera em `public/`:
 
 Os PNGs ficam **commitados**. O script só roda manualmente para regenerar.
 
-### 3. Service worker — `public/sw-template.js`
+### 3. Service worker — `scripts/sw-template.js`
+
+(Fica em `scripts/`, não em `public/`: tudo em `public/` é copiado
+literalmente para `out/`, e o template não deve ir para produção.)
 
 Escrito à mão (~80 linhas), template com placeholders `__PRECACHE__` e
 `__VERSION__` preenchidos pelo postbuild:
