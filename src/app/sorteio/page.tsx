@@ -9,7 +9,8 @@ import { useGroup } from '@/hooks/useGroup';
 import { drawTeams, validFormats } from '@/lib/balance';
 import { saveDraw, saveLastResult } from '@/lib/storage';
 import { uid } from '@/lib/utils';
-import { LEVELS_DESC, levelName } from '@/lib/levels';
+import { isHalf, levelLabel } from '@/lib/levels';
+import { SKILL_VALUES } from '@/types';
 import { PlayerTile } from '@/components/sorteio/PlayerTile';
 import { LevelGroupHeader } from '@/components/ui/LevelGroupHeader';
 import { GuestAdder } from '@/components/sorteio/GuestAdder';
@@ -75,7 +76,7 @@ export default function SorteioPage() {
   // Sem busca: agrupa por nível, do mais alto pro mais baixo. Grupos vazios somem.
   const groups = useMemo(
     () =>
-      LEVELS_DESC.map((skill) => ({
+      SKILL_VALUES.map((skill) => ({
         skill,
         players: activePlayers
           .filter((p) => p.skill === skill)
@@ -238,6 +239,7 @@ export default function SorteioPage() {
                   key={p.id}
                   name={p.name}
                   selected={selectedSet.has(p.id)}
+                  half={isHalf(p.skill)}
                   onToggle={() => toggle(p.id)}
                 />
               ))}
@@ -258,7 +260,7 @@ export default function SorteioPage() {
               return (
                 <div key={g.skill} className="space-y-2">
                   <LevelGroupHeader
-                    label={levelName(g.skill)}
+                    label={levelLabel(g.skill)}
                     count={g.players.length}
                     selection={{
                       state,
@@ -271,6 +273,7 @@ export default function SorteioPage() {
                         key={p.id}
                         name={p.name}
                         selected={selectedSet.has(p.id)}
+                        half={isHalf(p.skill)}
                         onToggle={() => toggle(p.id)}
                       />
                     ))}
