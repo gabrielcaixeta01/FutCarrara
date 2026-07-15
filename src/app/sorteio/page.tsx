@@ -8,8 +8,7 @@ import { useGroup } from '@/hooks/useGroup';
 import { drawTeams, validFormats } from '@/lib/balance';
 import { clearLastResult, saveDraw, saveLastResult } from '@/lib/storage';
 import { uid } from '@/lib/utils';
-import { isHalf, levelLabel } from '@/lib/levels';
-import { SKILL_VALUES } from '@/types';
+import { LEVELS_DESC, isHalf, levelName, levelOf } from '@/lib/levels';
 import { PlayerTile } from '@/components/sorteio/PlayerTile';
 import { LevelGroupHeader } from '@/components/ui/LevelGroupHeader';
 import { SearchField } from '@/components/ui/SearchField';
@@ -77,14 +76,18 @@ export default function SorteioPage() {
       .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
   }, [activePlayers, query]);
 
-  // Sem busca: agrupa por nível, do mais alto pro mais baixo. Grupos vazios somem.
+  // Sem busca: agrupa por nível base, do mais alto pro mais baixo. O meio ponto
+  // é modificador dentro do grupo (▲ no nome), não seção própria. Grupos vazios somem.
   const groups = useMemo(
     () =>
-      SKILL_VALUES.map((skill) => ({
-        skill,
+      LEVELS_DESC.map((level) => ({
+        level,
         players: activePlayers
-          .filter((p) => p.skill === skill)
-          .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')),
+          .filter((p) => levelOf(p.skill) === level)
+          .sort(
+            (a, b) =>
+              b.skill - a.skill || a.name.localeCompare(b.name, 'pt-BR'),
+          ),
       })).filter((g) => g.players.length > 0),
     [activePlayers],
   );
@@ -250,9 +253,9 @@ export default function SorteioPage() {
                     ? 'all'
                     : 'partial';
               return (
-                <div key={g.skill} className="space-y-2">
+                <div key={g.level} className="space-y-2">
                   <LevelGroupHeader
-                    label={levelLabel(g.skill)}
+                    label={levelName(g.level)}
                     count={g.players.length}
                     selection={{
                       state,

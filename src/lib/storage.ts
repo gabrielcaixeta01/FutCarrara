@@ -25,13 +25,13 @@ const SCHEMA_VERSION = 1;
 const DEFAULT_GROUP_NAME = 'Futebol Carrara';
 
 const DEFAULT_PLAYERS: Array<{ name: string; skill: Skill; active: boolean }> = [
-  { name: 'Caland', skill: 5, active: true },
   { name: 'Thiago M', skill: 5, active: true },
   { name: 'Jaques', skill: 5, active: true },
   { name: 'Luis H', skill: 5, active: true },
   { name: 'Diego', skill: 5, active: true },
   { name: 'Hansen', skill: 5, active: false },
   { name: 'Carrara', skill: 4.5, active: true },
+  { name: 'Caland', skill: 4.5, active: true },
   { name: 'Érico', skill: 4.5, active: true },
   { name: 'PZ', skill: 4.5, active: true },
   { name: 'Caixeta', skill: 4.5, active: true },
