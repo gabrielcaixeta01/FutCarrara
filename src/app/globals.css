@@ -52,6 +52,10 @@ body {
   animation: splash-screen-fade 2800ms ease-in-out forwards;
 }
 
+.splash-screen--interactive {
+  z-index: 70;
+}
+
 .splash-screen__backdrop {
   position: absolute;
   inset: 0;
@@ -69,6 +73,10 @@ body {
   overflow: hidden;
   box-shadow: 0 24px 80px -30px rgb(0 0 0 / 0.85);
   animation: splash-screen-zoom 2800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.splash-screen__card--interactive {
+  width: min(74vw, 19rem);
 }
 
 .splash-screen__image {
@@ -134,6 +142,10 @@ body {
   }
 
   .splash-screen__card {
+    animation: none;
+  }
+
+  .splash-screen--interactive {
     animation: none;
   }
 }

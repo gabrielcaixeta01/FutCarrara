@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import { Users, Shuffle, ChevronRight, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { MounjaroEasterEgg } from '@/components/ui/MounjaroEasterEgg';
 
 export default function HomePage() {
   return (
     <main className="relative mx-auto flex min-h-dvh max-w-md flex-col px-6 pt-20">
+      <MounjaroEasterEgg />
       {/* Assinatura: risca do meio-campo + círculo central, bem sutil */}
       <div
         aria-hidden
