@@ -3,50 +3,13 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Check, Copy, Eye, EyeOff, RefreshCw } from 'lucide-react';
-import type { Draw, DrawPlayer, DrawResult } from '@/types';
+import type { DrawResult } from '@/types';
 import { drawTeams, rerollStarters } from '@/lib/balance';
-import {
-  loadDraws,
-  loadGroup,
-  loadLastResult,
-  saveDraw,
-  saveLastResult,
-  updateDraw,
-} from '@/lib/storage';
-import { uid } from '@/lib/utils';
+import { loadGroup, loadLastResult, saveLastResult } from '@/lib/storage';
 import { formatForWhatsApp } from '@/lib/whatsapp';
 import { TeamCard } from '@/components/resultado/TeamCard';
 import { StartersBanner } from '@/components/resultado/StartersBanner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-
-/** Snapshot dos times (nome/skill congelados, não ids). */
-function toDrawTeams(result: DrawResult): DrawPlayer[][] {
-  return result.teams.map((t) =>
-    t.players.map((p) => ({
-      id: p.id,
-      name: p.name,
-      skill: p.skill,
-      ...(p.guest ? { guest: true as const } : {}),
-    })),
-  );
-}
-
-/** Congela o resultado num Draw completo. */
-function toDraw(result: DrawResult, groupId: string, seed: number): Draw {
-  return {
-    id: uid(),
-    groupId,
-    createdAt: seed,
-    seed,
-    numTeams: result.teams.length,
-    perTeam: result.teams[0]?.players.length ?? 0,
-    teams: toDrawTeams(result),
-    ...(result.starters ? { starters: result.starters } : {}),
-    ...(result.starterSeed !== undefined
-      ? { starterSeed: result.starterSeed }
-      : {}),
-  };
-}
 
 export default function ResultadoPage() {
   const [result, setResult] = useState<DrawResult | null>(null);
@@ -55,20 +18,11 @@ export default function ResultadoPage() {
   const [showLevels, setShowLevels] = useState(false);
   const [copied, setCopied] = useState(false);
   const [confirmReshuffle, setConfirmReshuffle] = useState(false);
-  // Draw desta sessão de resultado. Enquanto o admin estiver aqui, todo
-  // "sortear de novo" substitui este id em vez de acumular sorteios.
-  const [drawId, setDrawId] = useState<string | null>(null);
 
   useEffect(() => {
-    const snap = loadLastResult();
-    setResult(snap);
+    setResult(loadLastResult());
     const g = loadGroup();
     if (g) setGroupName(g.name);
-    if (snap) {
-      // Liga a sessão ao Draw criado no /sorteio (match inicial pela seed).
-      const draw = loadDraws().find((d) => d.seed === snap.seed);
-      setDrawId(draw?.id ?? null);
-    }
     setLoading(false);
   }, []);
 
@@ -88,45 +42,16 @@ export default function ResultadoPage() {
     const next = rerollStarters(result, Date.now());
     setResult(next);
     saveLastResult(next);
-
-    // Corrige o Draw da sessão (starters + starterSeed). Mesmo id, sem criar novo.
-    if (next.starters && drawId) {
-      updateDraw(drawId, {
-        starters: next.starters,
-        starterSeed: next.starterSeed,
-      });
-    }
   }
 
   function reshuffle() {
     if (!result) return;
     const pool = result.teams.flatMap((t) => t.players);
-    const numTeams = result.teams.length;
     const perTeam = result.teams[0]?.players.length ?? 0;
-    const seed = Date.now();
-    const next = drawTeams(pool, numTeams, perTeam, seed);
+    const next = drawTeams(pool, result.teams.length, perTeam, Date.now());
 
     setResult(next);
     saveLastResult(next);
-
-    // Um Draw por sessão de resultado: substitui o mesmo id, não acumula.
-    if (drawId) {
-      updateDraw(drawId, {
-        seed: next.seed,
-        starterSeed: next.starterSeed,
-        teams: toDrawTeams(next),
-        starters: next.starters,
-      });
-    } else {
-      // Sem draw da sessão (ex.: histórico perdido): cria e adota o id.
-      const g = loadGroup();
-      if (g) {
-        const draw = toDraw(next, g.id, seed);
-        saveDraw(draw);
-        setDrawId(draw.id);
-      }
-    }
-
     setConfirmReshuffle(false);
   }
 

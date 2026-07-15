@@ -43,15 +43,21 @@ Três camadas, sem vazamento entre elas:
 
 ## Estado de desenvolvimento
 
-O projeto é construído nesta ordem. Não pule etapas:
+**MVP pronto e no ar (Vercel).** Elenco, sorteio, resultado com WhatsApp e PWA
+instalável estão completos. Daqui pra frente é manutenção e ajuste fino.
 
-1. `types/index.ts` → `lib/balance.ts` → `lib/__tests__/balance.test.ts` ✅ **começar aqui**
-2. `lib/storage.ts` + `hooks/useGroup.ts`
-3. Tela `/elenco`
-4. Tela `/sorteio`
-5. Resultado + `lib/whatsapp.ts`
-6. Export/import JSON
-7. PWA
+Antes de commitar: `npm run typecheck`, `npm run lint` e `npm run test:run`.
+
+## Fora de escopo (não reintroduzir sem pedir)
+
+Estas features **existiram e foram removidas por decisão do dono**. Se parecerem
+uma boa ideia, elas já foram consideradas — pergunte antes de trazer de volta:
+
+- **Export/import de JSON.** Não há backup. O elenco vive só no `localStorage`
+  e, se sumir, é recadastrado na mão. Trade-off consciente.
+- **Histórico de sorteios.** Sorteio passado não serve pra nada depois do jogo.
+  Não existe o tipo `Draw`, nem persistência de sorteios: o resultado atual mora
+  no `sessionStorage` e acabou.
 
 ## Domínio (glossário)
 

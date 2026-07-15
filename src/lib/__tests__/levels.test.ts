@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { levelName, LEVEL_NAMES, LEVELS_DESC } from '../levels';
-import type { Skill } from '@/types';
 
 describe('levelName', () => {
   it('nomeia os 6 níveis', () => {
@@ -13,8 +12,10 @@ describe('levelName', () => {
   });
 
   it('bate com LEVEL_NAMES em todos os níveis', () => {
-    ([0, 1, 2, 3, 4, 5] as Skill[]).forEach((s) =>
-      expect(levelName(s)).toBe(LEVEL_NAMES[s]),
+    // LEVELS_DESC é Level[] (0–5 inteiro): é o domínio real de LEVEL_NAMES.
+    // Skill[] incluiria os meios pontos, que não são chave de nível.
+    LEVELS_DESC.forEach((level) =>
+      expect(levelName(level)).toBe(LEVEL_NAMES[level]),
     );
   });
 });

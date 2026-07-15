@@ -3,10 +3,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import type { Draw, DrawPlayer, Format, Player, Skill } from '@/types';
+import type { Format, Player, Skill } from '@/types';
 import { useGroup } from '@/hooks/useGroup';
 import { drawTeams, validFormats } from '@/lib/balance';
-import { clearLastResult, saveDraw, saveLastResult } from '@/lib/storage';
+import { clearLastResult, saveLastResult } from '@/lib/storage';
 import { uid } from '@/lib/utils';
 import { LEVELS_DESC, isHalf, levelName, levelOf } from '@/lib/levels';
 import { PlayerTile } from '@/components/sorteio/PlayerTile';
@@ -143,31 +143,6 @@ export default function SorteioPage() {
     const seed = Date.now();
     const result = drawTeams(pool, format.numTeams, format.perTeam, seed);
     saveLastResult(result);
-
-    // Snapshot imutável no histórico — congela nome/skill, não guarda ids.
-    const teams: DrawPlayer[][] = result.teams.map((team) =>
-      team.players.map((p) => ({
-        id: p.id,
-        name: p.name,
-        skill: p.skill,
-        ...(p.guest ? { guest: true as const } : {}),
-      })),
-    );
-    const draw: Draw = {
-      id: uid(),
-      groupId: group.id,
-      createdAt: seed,
-      seed,
-      numTeams: format.numTeams,
-      perTeam: format.perTeam,
-      teams,
-      ...(result.starters ? { starters: result.starters } : {}),
-      ...(result.starterSeed !== undefined
-        ? { starterSeed: result.starterSeed }
-        : {}),
-    };
-    saveDraw(draw);
-
     router.push('/resultado');
   }
 

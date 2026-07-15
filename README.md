@@ -39,9 +39,9 @@ Se algum desses virar necessidade real, aí sim se discute backend. Não antes.
 | Componentes | shadcn/ui | Base acessível, sem lock-in |
 | Persistência | localStorage | App single-user, offline-first |
 | Testes | Vitest | Foco no algoritmo de balanceamento |
-| Deploy | Vercel ou GitHub Pages | `output: 'export'`, sem servidor |
+| Deploy | Vercel | `output: 'export'`, sem servidor |
 
-**Sem backend, sem banco, sem auth.** Todo o estado vive no `localStorage` do dispositivo do admin. O risco de perder os dados é mitigado com export/import de JSON.
+**Sem backend, sem banco, sem auth.** Todo o estado vive no `localStorage` do dispositivo do admin — e só lá. Não há backup: se o admin limpar os dados do site, o elenco se perde e é recadastrado na mão. É uma troca consciente (ver Roadmap). Instalar o app na tela inicial protege contra o despejo automático de storage que o iOS faz em sites não instalados.
 
 ## Regras de negócio
 
@@ -76,7 +76,7 @@ src/
 │   └── resultado/           # TeamCard, StartersBadge, CopyToWhatsApp
 ├── lib/
 │   ├── balance.ts            # ⭐ algoritmo (função pura)
-│   ├── storage.ts            # wrapper do localStorage + export/import
+│   ├── storage.ts            # wrapper do localStorage
 │   ├── whatsapp.ts           # formata o resultado como texto
 │   ├── utils.ts              # cn(), helpers
 │   └── __tests__/
@@ -99,11 +99,15 @@ npm run build      # gera ./out (static)
 
 ## Roadmap
 
-- [ ] Tipos + algoritmo + testes
-- [ ] localStorage + hooks
-- [ ] Tela de elenco (CRUD)
-- [ ] Tela de sorteio (grid + formatos)
-- [ ] Tela de resultado + copiar pro WhatsApp
-- [ ] Export/import JSON
-- [ ] PWA (instalável no celular)
-- [ ] Histórico de sorteios
+- [x] Tipos + algoritmo + testes
+- [x] localStorage + hooks
+- [x] Tela de elenco (CRUD)
+- [x] Tela de sorteio (grid + formatos)
+- [x] Tela de resultado + copiar pro WhatsApp
+- [x] PWA (instalável no celular)
+- [x] Deploy na Vercel
+
+Fora de escopo, por decisão: **export/import de JSON** e **histórico de sorteios**.
+Os dois já existiram no código e foram removidos — o app é de uso pontual, o
+elenco é fácil de recadastrar, e um sorteio passado não serve pra nada depois
+que o jogo acabou. Menos código, menos estado, menos manutenção.

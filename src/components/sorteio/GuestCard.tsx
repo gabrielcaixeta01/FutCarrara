@@ -2,9 +2,7 @@
 
 import { X } from 'lucide-react';
 import type { Player, Skill } from '@/types';
-import { isHalf } from '@/lib/levels';
 import { SkillSelect } from '@/components/ui/SkillSelect';
-import { HalfMark } from '@/components/ui/HalfMark';
 
 interface Props {
   guest: Player;
@@ -12,7 +10,11 @@ interface Props {
   onRemove: () => void;
 }
 
-/** Card de visitante: nível editável inline, badge e X pra remover. */
+/**
+ * Card de visitante: nível editável inline, badge e X pra remover.
+ * O nível é só inteiro — não dá pra cravar meio ponto de quem ninguém conhece —
+ * então aqui nunca aparece o ▲.
+ */
 export function GuestCard({ guest, onSkill, onRemove }: Props) {
   return (
     <div className="flex items-center gap-3 rounded-xl border border-grass bg-grass/10 px-3 py-2.5">
@@ -21,7 +23,6 @@ export function GuestCard({ guest, onSkill, onRemove }: Props) {
           <span className="truncate font-medium text-slate-100">
             {guest.name}
           </span>
-          {isHalf(guest.skill) && <HalfMark />}
           <span className="rounded-full bg-grass/20 px-2 py-0.5 text-xs font-medium text-grass-soft">
             visitante
           </span>
@@ -32,6 +33,7 @@ export function GuestCard({ guest, onSkill, onRemove }: Props) {
         value={guest.skill}
         onChange={onSkill}
         ariaLabel={`Nível de ${guest.name}`}
+        wholeLevelsOnly
       />
 
       <button

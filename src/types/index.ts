@@ -52,34 +52,6 @@ export interface DrawResult {
   starterSeed?: number;
 }
 
-/** Jogador congelado no momento do sorteio. Snapshot, não referência. */
-export interface DrawPlayer {
-  id: string;
-  name: string;
-  skill: Skill;
-  guest?: true;
-}
-
-/**
- * Sorteio persistido no histórico.
- *
- * Um sorteio passado é um fato imutável: guarda um snapshot dos jogadores,
- * não ids. Assim ele não quebra se alguém sai do elenco depois, nem depende
- * de visitantes que nunca estiveram nele.
- */
-export interface Draw {
-  id: string;
-  groupId: string;
-  createdAt: number;
-  seed: number;
-  starterSeed?: number;
-  numTeams: number;
-  perTeam: number;
-  /** Snapshot dos jogadores por time — congelado no momento do sorteio. */
-  teams: DrawPlayer[][];
-  starters?: [number, number];
-}
-
 /** Arranjo possível para N confirmados. */
 export interface Format {
   numTeams: number;
