@@ -1,5 +1,12 @@
 import Link from 'next/link';
-import { Users, Shuffle, ChevronRight, type LucideIcon } from 'lucide-react';
+import {
+  Award,
+  ChevronRight,
+  Shuffle,
+  Star,
+  Users,
+  type LucideIcon,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MounjaroEasterEgg } from '@/components/ui/MounjaroEasterEgg';
 
@@ -37,6 +44,13 @@ export default function HomePage() {
       </header>
 
       <nav className="mt-12 space-y-3">
+        <HomeCard
+          href="/destaques"
+          icon={Star}
+          title="Jogadores Destaque"
+          desc="Veja as cartas estilo FIFA dos principais nomes."
+          accent
+        />
         <HomeCard
           href="/sorteio"
           icon={Shuffle}
