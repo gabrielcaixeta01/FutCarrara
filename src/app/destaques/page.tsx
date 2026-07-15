@@ -17,7 +17,7 @@ const HIGHLIGHT_PLAYERS: HighlightPlayer[] = [
     dribble: 30,
     defense: 55,
     physical: 79,
-    accent: 'from-amber-300/35 via-orange-400/10 to-pink-500/15',
+    accent: 'from-amber-100/60 via-rose-400/18 to-purple-950/35',
   },
   {
     id: 'destaque-2',
@@ -33,7 +33,7 @@ const HIGHLIGHT_PLAYERS: HighlightPlayer[] = [
     dribble: 3,
     defense: 40,
     physical: 32,
-    accent: 'from-sky-300/35 via-cyan-400/10 to-emerald-400/15',
+    accent: 'from-orange-300/45 via-amber-700/22 to-stone-900/40',
   },
   {
     id: 'destaque-3',
@@ -49,7 +49,7 @@ const HIGHLIGHT_PLAYERS: HighlightPlayer[] = [
     dribble: 21,
     defense: 40,
     physical: 12,
-    accent: 'from-sky-300/35 via-cyan-400/10 to-emerald-400/15',
+    accent: 'from-lime-200/45 via-yellow-600/16 to-emerald-950/35',
   },
   {
     id: 'destaque-4',
@@ -65,7 +65,7 @@ const HIGHLIGHT_PLAYERS: HighlightPlayer[] = [
     dribble: 85,
     defense: 78,
     physical: 79,
-    accent: 'from-sky-300/35 via-cyan-400/10 to-emerald-400/15',
+    accent: 'from-yellow-100/55 via-amber-400/18 to-orange-950/35',
   },
   {
     id: 'destaque-5',
@@ -81,7 +81,7 @@ const HIGHLIGHT_PLAYERS: HighlightPlayer[] = [
     dribble: 88,
     defense: 91,
     physical: 78,
-    accent: 'from-sky-300/35 via-cyan-400/10 to-emerald-400/15',
+    accent: 'from-slate-100/50 via-sky-400/16 to-indigo-950/38',
   },
   {
     id: 'destaque-6',
@@ -97,7 +97,7 @@ const HIGHLIGHT_PLAYERS: HighlightPlayer[] = [
     dribble: 85,
     defense: 78,
     physical: 77,
-    accent: 'from-sky-300/35 via-cyan-400/10 to-emerald-400/15',
+    accent: 'from-stone-200/45 via-lime-900/22 to-green-950/40',
   },
 ];
 
