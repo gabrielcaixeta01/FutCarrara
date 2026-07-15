@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 
 const DEFAULT_DURATION_MS = 2800;
 const REDUCED_MOTION_DURATION_MS = 350;
@@ -29,7 +29,11 @@ export function SplashScreen() {
   }
 
   return (
-    <div aria-hidden className="splash-screen">
+    <div
+      aria-hidden
+      className="splash-screen splash-screen--boot"
+      style={{ '--splash-duration': `${DEFAULT_DURATION_MS}ms` } as CSSProperties}
+    >
       <div className="splash-screen__backdrop" />
       <div className="splash-screen__card">
         <Image

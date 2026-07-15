@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { Pill } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 
 const ANIMATION_DURATION_MS = 2800;
 
@@ -44,7 +44,11 @@ export function MounjaroEasterEgg() {
 
 function MounjaroOverlay() {
   return (
-    <div aria-hidden className="splash-screen splash-screen--interactive">
+    <div
+      aria-hidden
+      className="splash-screen splash-screen--interactive"
+      style={{ '--splash-duration': `${ANIMATION_DURATION_MS}ms` } as CSSProperties}
+    >
       <div className="splash-screen__backdrop" />
       <div className="splash-screen__card splash-screen__card--interactive">
         <Image

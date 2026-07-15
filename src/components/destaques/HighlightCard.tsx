@@ -45,7 +45,7 @@ export function HighlightCard({ player }: Props) {
   return (
     <article
       className={cn(
-        'group relative isolate aspect-63/88 overflow-hidden bg-linear-to-b shadow-[0_24px_90px_-34px_rgba(0,0,0,0.95)]',
+        'highlight-card relative isolate aspect-63/88 overflow-hidden bg-linear-to-b shadow-[0_24px_90px_-34px_rgba(0,0,0,0.95)]',
         player.accent,
       )}
       style={{ clipPath: CARD_SHAPE }}
@@ -85,8 +85,8 @@ export function HighlightCard({ player }: Props) {
           apaga o texto. Isso garante contraste independente da imagem. */}
       <div className="pointer-events-none absolute left-0 top-0 h-56 w-44 bg-[radial-gradient(ellipse_at_top_left,rgba(4,10,7,0.82),transparent_70%)]" />
 
-      {/* Brilho metálico atravessando a carta. */}
-      <div className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/2 -skew-x-12 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.16),transparent)] transition-transform duration-700 ease-out group-hover:translate-x-[280%] motion-reduce:transition-none motion-reduce:group-hover:translate-x-0" />
+      {/* Brilho metálico atravessando a carta, guiado pelo scroll (ver globals.css). */}
+      <div className="highlight-sheen pointer-events-none absolute inset-y-0 -left-1/3 w-1/2 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.16),transparent)]" />
 
       <div className="relative z-10 flex h-full flex-col px-6 pt-5 pb-8">
         {/* Bloco de identidade, canto superior esquerdo — a assinatura da carta FIFA. */}
