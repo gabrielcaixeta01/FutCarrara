@@ -18,16 +18,10 @@ export interface Player {
   id: string;
   name: string;
   skill: Skill;
-  /** Jogador saiu do grupo. Some da UI sem quebrar sorteios antigos. */
+  /** Aposentado: continua no elenco, mas não aparece no sorteio. */
   active: boolean;
-  /** Visitante do sorteio de hoje. Só UI/estado de tela; não persiste no elenco. */
+  /** Visitante do sorteio de hoje. Só estado de tela; não existe no elenco. */
   guest?: true;
-}
-
-export interface Group {
-  id: string;
-  name: string;
-  players: Player[];
 }
 
 /** Um time já sorteado, pronto pra exibição. */

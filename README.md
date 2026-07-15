@@ -10,11 +10,12 @@ Este app resolve **só o sorteio inicial**. O que acontece depois (quem entra, q
 
 ## O que o app faz
 
-1. Guarda o elenco fixo do grupo — nome + skill de 0 a 5. Cadastra uma vez, usa sempre.
+1. Conhece o elenco fixo do grupo — nome + skill de 0 a 5. A lista mora no
+   código (`src/lib/roster.ts`) e só o dono edita; a tela de elenco é só leitura.
 2. No dia do jogo, o admin marca quem confirmou.
 3. O app sugere os formatos possíveis (ex.: 20 selecionados → `4×5` ou `3×6`).
 4. Sorteia os times o mais equilibrados possível.
-5. Se forem 3+ times, sorteia também quais dois começam jogando.
+5. Se forem 3+ times, sorteia também quais dois começam e quem entra depois.
 6. Botão pra copiar o resultado formatado e colar no grupo do WhatsApp.
 
 ## O que o app NÃO faz
@@ -37,11 +38,11 @@ Se algum desses virar necessidade real, aí sim se discute backend. Não antes.
 | Linguagem | TypeScript (strict) | |
 | UI | React 19 + Tailwind CSS v4 | |
 | Componentes | shadcn/ui | Base acessível, sem lock-in |
-| Persistência | localStorage | App single-user, offline-first |
+| Persistência | nenhuma (elenco no código) | App single-user, offline-first |
 | Testes | Vitest | Foco no algoritmo de balanceamento |
 | Deploy | Vercel | `output: 'export'`, sem servidor |
 
-**Sem backend, sem banco, sem auth.** Todo o estado vive no `localStorage` do dispositivo do admin — e só lá. Não há backup: se o admin limpar os dados do site, o elenco se perde e é recadastrado na mão. É uma troca consciente (ver Roadmap). Instalar o app na tela inicial protege contra o despejo automático de storage que o iOS faz em sites não instalados.
+**Sem backend, sem banco, sem auth — e sem estado do usuário.** O elenco é uma lista estática no código, versionada no git: mudar nível de alguém é editar `src/lib/roster.ts` e fazer deploy. O app não grava nada no aparelho além do resultado do sorteio atual, que vive no `sessionStorage` e some ao fechar. Logo: não tem o que perder, não tem o que sincronizar e não tem backup pra fazer.
 
 ## Regras de negócio
 
@@ -67,26 +68,28 @@ src/
 ├── app/
 │   ├── layout.tsx
 │   ├── page.tsx              # Home → atalhos p/ elenco e sorteio
-│   ├── elenco/page.tsx       # CRUD do elenco
-│   └── sorteio/page.tsx      # Seleção + sorteio + resultado
+│   ├── elenco/page.tsx       # Elenco (só leitura): busca, filtros, níveis
+│   ├── sorteio/page.tsx      # Seleção dos confirmados + visitantes + formato
+│   └── resultado/page.tsx    # Times sorteados, quem começa, copiar pro zap
 ├── components/
-│   ├── ui/                   # shadcn (button, input, dialog, ...)
-│   ├── elenco/               # PlayerList, PlayerForm, SkillPicker
-│   ├── sorteio/              # PlayerGrid, FormatPicker, SelectionCounter
-│   └── resultado/           # TeamCard, StartersBadge, CopyToWhatsApp
+│   ├── ui/                   # SearchField, ConfirmDialog, MobileNav, ...
+│   ├── elenco/               # PlayerRow, Filters
+│   ├── sorteio/              # PlayerTile, GuestAdder, GuestCard, SortearFooter
+│   └── resultado/            # TeamCard, StartersBanner, teamColors
 ├── lib/
-│   ├── balance.ts            # ⭐ algoritmo (função pura)
-│   ├── storage.ts            # wrapper do localStorage
+│   ├── balance.ts            # ⭐ algoritmo (puro, não importa nada)
+│   ├── roster.ts             # ⭐ o elenco — edite aqui pra mudar jogador/nível
+│   ├── levels.ts             # nome dos níveis, meio ponto
+│   ├── storage.ts            # sessionStorage do resultado atual (só isso)
 │   ├── whatsapp.ts           # formata o resultado como texto
-│   ├── utils.ts              # cn(), helpers
-│   └── __tests__/
-│       └── balance.test.ts
-├── hooks/
-│   ├── useGroup.ts           # elenco (CRUD + persistência)
-│   └── useDraw.ts            # estado do sorteio em andamento
+│   ├── utils.ts              # cn(), uid()
+│   └── __tests__/            # balance, roster, levels, whatsapp
 └── types/
-    └── index.ts              # Player, Group, Draw, Team
+    └── index.ts              # Skill, Player, Team, DrawResult, Format
 ```
+
+**Não há `hooks/`, nem estado global, nem CRUD.** O elenco é constante do bundle;
+as telas leem `ROSTER` direto.
 
 ## Rodando
 
@@ -100,14 +103,19 @@ npm run build      # gera ./out (static)
 ## Roadmap
 
 - [x] Tipos + algoritmo + testes
-- [x] localStorage + hooks
-- [x] Tela de elenco (CRUD)
-- [x] Tela de sorteio (grid + formatos)
+- [x] Elenco estático no código
+- [x] Tela de elenco (leitura, busca, filtros)
+- [x] Tela de sorteio (grid + formatos + visitantes)
 - [x] Tela de resultado + copiar pro WhatsApp
 - [x] PWA (instalável no celular)
 - [x] Deploy na Vercel
 
-Fora de escopo, por decisão: **export/import de JSON** e **histórico de sorteios**.
-Os dois já existiram no código e foram removidos — o app é de uso pontual, o
-elenco é fácil de recadastrar, e um sorteio passado não serve pra nada depois
-que o jogo acabou. Menos código, menos estado, menos manutenção.
+**MVP fechado.** Fora de escopo por decisão: edição de elenco pelo app,
+export/import de JSON e histórico de sorteios. Os três já existiram no código e
+foram removidos. O elenco é do dono e mora no git; um sorteio passado não serve
+pra nada depois que o jogo acabou. Menos código, menos estado, menos manutenção.
+
+## Como editar o elenco
+
+Abra `src/lib/roster.ts`, mexa na lista, commite e faça deploy. Os testes de
+`roster.test.ts` seguram os erros bobos (id repetido, skill fora do domínio).

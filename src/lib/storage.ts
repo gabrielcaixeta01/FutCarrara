@@ -1,90 +1,18 @@
 /**
- * Único módulo que toca localStorage.
- * Todo acesso é client-side; chame apenas de dentro de useEffect/handlers.
+ * Único módulo que toca storage do navegador — hoje só o sessionStorage, e só
+ * pra carregar o resultado do sorteio de /sorteio até /resultado.
+ *
+ * O elenco NÃO passa por aqui: é lista estática em `lib/roster.ts`, editada no
+ * código. O app não persiste nada do usuário.
  *
  * Regras (CLAUDE.md):
- * - Nenhum acesso a localStorage no top-level (quebraria o SSR do Next).
+ * - Nenhum acesso no top-level (quebraria o SSR do Next); só em useEffect/handler.
  * - Toda leitura passa por guard: try/catch no parse + validação de shape.
  *   Dado corrompido ou de versão antiga nunca derruba o app.
  */
-import type { Group, Player, Skill, Team, DrawResult } from '@/types';
+import type { Player, Skill, Team, DrawResult } from '@/types';
 
-const GROUP_KEY = 'futcarrara:group';
 const RESULT_KEY = 'futcarrara:lastResult';
-
-const DEFAULT_GROUP_NAME = 'Futebol Carrara';
-
-const DEFAULT_PLAYERS: Array<{ name: string; skill: Skill; active: boolean }> = [
-  { name: 'Thiago M', skill: 5, active: true },
-  { name: 'Jaques', skill: 5, active: true },
-  { name: 'Luis H', skill: 5, active: true },
-  { name: 'Diego', skill: 5, active: true },
-  { name: 'Hansen', skill: 5, active: false },
-  { name: 'Carrara', skill: 4.5, active: true },
-  { name: 'Caland', skill: 4.5, active: true },
-  { name: 'Érico', skill: 4.5, active: true },
-  { name: 'PZ', skill: 4.5, active: true },
-  { name: 'Caixeta', skill: 4.5, active: true },
-  { name: 'Nenzin', skill: 4.5, active: true },
-  { name: 'Léo', skill: 4.5, active: true },
-  { name: 'JP', skill: 4.5, active: true },
-  { name: 'Cauê', skill: 4, active: true },
-  { name: 'Saad', skill: 4, active: true },
-  { name: 'Paim', skill: 4, active: true },
-  { name: 'PH', skill: 4, active: false },
-  { name: 'Igor', skill: 4, active: true },
-  { name: 'Bolt', skill: 4, active: true },
-  { name: 'Lyra', skill: 4, active: true },
-  { name: 'Joao M', skill: 3.5, active: true },
-  { name: 'Dp', skill: 3.5, active: true },
-  { name: 'Tom', skill: 3.5, active: true },
-  { name: 'GB', skill: 3.5, active: true },
-  { name: 'Carone', skill: 3.5, active: true },
-  { name: 'Portugal', skill: 3.5, active: true },
-  { name: 'Paulo Ricco', skill: 3, active: true },
-  { name: 'Guilherme Galo', skill: 3, active: true },
-  { name: 'Pedro Andrade', skill: 3, active: true },
-  { name: 'Adriano', skill: 3, active: true },
-  { name: 'Serra', skill: 3, active: true },
-  { name: 'Nicholas', skill: 3, active: true },
-  { name: 'Trento', skill: 3, active: true },
-  { name: 'Diegordo', skill: 3, active: false },
-  { name: 'Titcho', skill: 2.5, active: true },
-  { name: 'Max', skill: 2.5, active: true },
-  { name: 'Marcelo', skill: 2.5, active: true },
-  { name: 'Carrara Pai', skill: 2, active: false },
-  { name: 'Felipe Fidalgo', skill: 2, active: true },
-  { name: 'Dan', skill: 2, active: true },
-  { name: 'Carrara Irmão', skill: 2, active: false },
-  { name: 'Lucas Aquino', skill: 1.5, active: true },
-  { name: 'Vitor Mello', skill: 1, active: true },
-  { name: 'Rafael Aquino', skill: 1, active: true },
-  { name: 'Paulo Bluetooth', skill: 1, active: true },
-  { name: 'Enzo Pompeu', skill: 0, active: false },
-];
-
-/** Acesso a localStorage tolerante a SSR e a modos onde ele lança/está off. */
-function ls(): Storage | null {
-  try {
-    if (typeof window === 'undefined') return null;
-    return window.localStorage;
-  } catch {
-    return null;
-  }
-}
-
-export function createSeedGroup(): Group {
-  return {
-    id: crypto.randomUUID(),
-    name: DEFAULT_GROUP_NAME,
-    players: DEFAULT_PLAYERS.map((player) => ({
-      id: crypto.randomUUID(),
-      name: player.name,
-      skill: player.skill,
-      active: player.active,
-    })),
-  };
-}
 
 /** sessionStorage para o resultado do sorteio (transitório, some ao fechar). */
 function ss(): Storage | null {
@@ -123,15 +51,6 @@ function isPlayer(v: unknown): v is Player {
   );
 }
 
-function isGroup(v: unknown): v is Group {
-  return (
-    isRecord(v) &&
-    typeof v.id === 'string' &&
-    typeof v.name === 'string' &&
-    Array.isArray(v.players) &&
-    v.players.every(isPlayer)
-  );
-}
 
 function isStarters(v: unknown): v is [number, number] {
   return (
@@ -163,31 +82,6 @@ function isDrawResult(v: unknown): v is DrawResult {
     (v.next === undefined || typeof v.next === 'number') &&
     (v.starterSeed === undefined || typeof v.starterSeed === 'number')
   );
-}
-
-// --- Group ------------------------------------------------------------------
-
-export function loadGroup(): Group | null {
-  const store = ls();
-  if (!store) return null;
-  try {
-    const raw = store.getItem(GROUP_KEY);
-    if (raw === null) return null;
-    const parsed: unknown = JSON.parse(raw);
-    return isGroup(parsed) ? parsed : null;
-  } catch {
-    return null;
-  }
-}
-
-export function saveGroup(group: Group): void {
-  const store = ls();
-  if (!store) return;
-  try {
-    store.setItem(GROUP_KEY, JSON.stringify(group));
-  } catch {
-    // best-effort: quota cheia ou modo privado não deve derrubar o app.
-  }
 }
 
 // --- Último resultado (transitório) -----------------------------------------

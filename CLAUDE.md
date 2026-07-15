@@ -21,14 +21,15 @@ npm run build    # static export → ./out
 Três camadas, sem vazamento entre elas:
 
 1. **`src/lib/balance.ts`** — lógica de sorteio. Funções **puras**. Sem React, sem `localStorage`, sem `Date.now()` implícito, sem `Math.random()` direto. A seed entra como parâmetro. É o coração do app e é o único lugar com cobertura de teste obrigatória.
-2. **`src/lib/storage.ts` + `src/hooks/`** — persistência e estado. Único lugar que toca `localStorage`.
-3. **`src/app/` + `src/components/`** — UI. Não implementa regra de negócio; só chama `lib` e `hooks`.
+2. **`src/lib/roster.ts`** — o elenco. Lista **estática**, editada à mão no código. Não vem de storage, não é editável pelo app. É a fonte única de verdade dos jogadores.
+3. **`src/lib/storage.ts`** — único lugar que toca storage do navegador. Hoje só `sessionStorage`, e só pra levar o resultado de `/sorteio` até `/resultado`. **Nada do usuário é persistido.**
+4. **`src/app/` + `src/components/`** — UI. Não implementa regra de negócio; só chama `lib`.
 
 ## Regras invioláveis
 
 - **`balance.ts` não importa nada.** Nenhum módulo do projeto, nenhuma lib externa. Se precisar de aleatoriedade, use o `mulberry32` local com a seed recebida. Isso garante que o sorteio seja reproduzível a partir da seed.
 - **Aleatoriedade sempre seedada.** Nunca `Math.random()` dentro de `lib/`. Componentes podem gerar a seed inicial (`Date.now()`), mas passam pra baixo.
-- **Skill é `0 | 1 | 2 | 3 | 4 | 5`**, inteiro. Não vira float, não vira decimal, não vira "média de votos".
+- **Skill é `0` a `5` em passos de `0.5`** (11 valores). Não vira contínuo, não vira "média de votos". O meio ponto é um modificador visual (▲) dentro do nível, não um nível novo: o **nível base** (`Level`, 0–5 inteiro) é que nomeia e agrupa. Ver `lib/levels.ts`.
 - **`selecionados === numTeams * perTeam`.** Sempre. O sorteio lança erro se não bater. A UI impede o clique antes disso.
 - **Sem `any`.** TypeScript em strict mode.
 - **Não adicione dependência sem necessidade.** Especialmente: nada de state manager (Redux/Zustand/Jotai), nada de fetch lib, nada de date lib. O app não tem servidor nem datas.
@@ -53,8 +54,12 @@ Antes de commitar: `npm run typecheck`, `npm run lint` e `npm run test:run`.
 Estas features **existiram e foram removidas por decisão do dono**. Se parecerem
 uma boa ideia, elas já foram consideradas — pergunte antes de trazer de volta:
 
-- **Export/import de JSON.** Não há backup. O elenco vive só no `localStorage`
-  e, se sumir, é recadastrado na mão. Trade-off consciente.
+- **Edição de elenco pelo app.** O elenco é uma lista estática em `lib/roster.ts`,
+  editada no código pelo dono. A tela `/elenco` é **só leitura**: lista, busca,
+  filtros e agrupamento — nunca botão de adicionar, remover ou mudar nível.
+  Não existe hook de elenco nem persistência de jogador.
+- **Export/import de JSON.** Sem backup, e sem nada pra fazer backup: o elenco
+  mora no git, não no aparelho.
 - **Histórico de sorteios.** Sorteio passado não serve pra nada depois do jogo.
   Não existe o tipo `Draw`, nem persistência de sorteios: o resultado atual mora
   no `sessionStorage` e acabou.
@@ -63,17 +68,22 @@ uma boa ideia, elas já foram consideradas — pergunte antes de trazer de volta
 
 | Termo | Significado |
 |---|---|
-| **Elenco** | Os ~80 jogadores cadastrados no grupo. Persistente. |
-| **Skill** | Nível do jogador, 0–5. Definido pelo admin. |
+| **Elenco** | Os jogadores do grupo. Lista estática em `lib/roster.ts`, editada no código. |
+| **Skill** | Nível do jogador, 0–5 em passos de 0.5. Definido pelo dono, no código. |
+| **Nível (Level)** | Nível base: `Math.floor(skill)`, 0–5 inteiro. É o que tem nome ("Craque") e agrupa a UI. |
+| **Aposentado** | `active: false`. Fica no elenco, some do sorteio. |
 | **Confirmados** | Subconjunto do elenco selecionado para o sorteio de hoje. |
+| **Visitante** | Jogador avulso, só do sorteio de hoje. Nível inteiro apenas; não entra no elenco. |
 | **Formato** | `numTeams × perTeam`. Ex.: `4×5`, `3×6`, `2×6`. |
-| **Sobras** | Confirmados que excedem `numTeams × perTeam`. Ficam de fora do sorteio. |
+| **Sobras** | Confirmados que excedem `numTeams × perTeam`. Hoje a UI **não permite**: só formatos exatos aparecem. |
 | **Spread** | `max(soma de skill) - min(soma de skill)` entre times. Quanto menor, melhor. |
 | **Starters** | Os 2 times que começam jogando, quando há 3+. Sorteados. |
+| **Próximo** | O 3º da ordem sorteada: entra quando o primeiro jogo acabar. |
 
 ## Armadilhas conhecidas
 
 - **Não persista ordem de chegada.** O admin sabe quem chegou primeiro; ele só marca as pessoas na tela. O app não modela isso.
 - **A ordem dos jogadores dentro do time exibido deve ser embaralhada.** Se sair ordenada por skill, o pessoal vai ler o ranking e reclamar.
 - **Balancear por soma só funciona com times do mesmo tamanho.** Como `perTeam` é fixo dentro de um sorteio, soma serve. Se algum dia os times puderem ter tamanhos diferentes, o custo precisa virar média — mas isso está fora do escopo hoje.
-- **`localStorage` é síncrono e só existe no client.** Todo acesso passa por `storage.ts` e roda dentro de `useEffect`, nunca no render. Componentes que dependem dele são `'use client'`.
+- **`sessionStorage` é síncrono e só existe no client.** Todo acesso passa por `storage.ts` e roda dentro de `useEffect`, nunca no render. Componentes que dependem dele são `'use client'`. O elenco não tem esse problema: vem de `roster.ts`, é constante do bundle e pode ser lido no render.
+- **Não duplique regra de negócio na UI.** O `SortearFooter` tem uma tabela `EXACT` com os totais que fecham, escrita à mão — ela repete o `{2,3,4}×{5,6,7}` do `balance.ts`. É dívida conhecida: se mexer nos formatos, os dois lugares precisam mudar.

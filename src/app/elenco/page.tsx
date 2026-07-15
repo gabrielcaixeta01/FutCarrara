@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Users } from 'lucide-react';
 import type { Player } from '@/types';
-import { useGroup } from '@/hooks/useGroup';
+import { ROSTER } from '@/lib/roster';
 import { LEVELS_DESC, levelName, levelOf, type Level } from '@/lib/levels';
 import { PlayerRow } from '@/components/elenco/PlayerRow';
 import { Filters, type StatusFilter } from '@/components/elenco/Filters';
@@ -30,7 +30,8 @@ const byActiveThenSkillThenName = (a: Player, b: Player) =>
   a.name.localeCompare(b.name, 'pt-BR');
 
 export default function ElencoPage() {
-  const { players, loading } = useGroup();
+  // Lista estática do código: não carrega, não muda, não vem de storage.
+  const players = ROSTER;
 
   const [query, setQuery] = useState('');
   const [levels, setLevels] = useState<Set<Level>>(new Set());
@@ -97,7 +98,7 @@ export default function ElencoPage() {
           <h1 className="font-display text-4xl uppercase leading-none tracking-tight text-ink">
             Elenco
           </h1>
-          {!loading && players.length > 0 && (
+          {players.length > 0 && (
             <span className="rounded-full border border-line bg-pitch-soft px-3 py-1 text-xs font-medium text-ink-soft">
               <span className="font-bold text-grass-soft">{activeCount}</span> de{' '}
               {players.length}
@@ -108,7 +109,7 @@ export default function ElencoPage() {
         <SearchField value={query} onChange={setQuery} />
       </header>
 
-      {!loading && players.length > 0 && (
+      {players.length > 0 && (
         <div className="px-4 pt-4">
           <Filters
             levelCounts={levelCounts}
@@ -123,11 +124,7 @@ export default function ElencoPage() {
       )}
 
       <div className="px-4 pt-4">
-        {loading ? (
-          <p className="py-16 text-center text-sm text-slate-500">
-            Carregando elenco…
-          </p>
-        ) : players.length === 0 ? (
+        {players.length === 0 ? (
           <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-line px-6 py-12 text-center">
             <Users className="size-10 text-slate-600" />
             <div className="space-y-1">

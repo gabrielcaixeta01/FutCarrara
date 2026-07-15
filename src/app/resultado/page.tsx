@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { Check, Copy, Eye, EyeOff, RefreshCw } from 'lucide-react';
 import type { DrawResult } from '@/types';
 import { drawTeams, rerollStarters } from '@/lib/balance';
-import { loadGroup, loadLastResult, saveLastResult } from '@/lib/storage';
+import { loadLastResult, saveLastResult } from '@/lib/storage';
+import { GROUP_NAME } from '@/lib/roster';
 import { formatForWhatsApp } from '@/lib/whatsapp';
 import { TeamCard } from '@/components/resultado/TeamCard';
 import { StartersBanner } from '@/components/resultado/StartersBanner';
@@ -13,23 +14,21 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 export default function ResultadoPage() {
   const [result, setResult] = useState<DrawResult | null>(null);
-  const [groupName, setGroupName] = useState('Futebol Carrara');
   const [loading, setLoading] = useState(true);
   const [showLevels, setShowLevels] = useState(false);
   const [copied, setCopied] = useState(false);
   const [confirmReshuffle, setConfirmReshuffle] = useState(false);
 
+  // sessionStorage só existe no client: por isso o resultado entra num effect.
   useEffect(() => {
     setResult(loadLastResult());
-    const g = loadGroup();
-    if (g) setGroupName(g.name);
     setLoading(false);
   }, []);
 
   async function copyToWhatsApp() {
     if (!result) return;
     try {
-      await navigator.clipboard.writeText(formatForWhatsApp(result, groupName));
+      await navigator.clipboard.writeText(formatForWhatsApp(result, GROUP_NAME));
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {

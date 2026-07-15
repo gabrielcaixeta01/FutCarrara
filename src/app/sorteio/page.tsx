@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import type { Format, Player, Skill } from '@/types';
-import { useGroup } from '@/hooks/useGroup';
+import { ROSTER } from '@/lib/roster';
 import { drawTeams, validFormats } from '@/lib/balance';
 import { clearLastResult, saveLastResult } from '@/lib/storage';
 import { uid } from '@/lib/utils';
@@ -25,7 +25,6 @@ function norm(s: string): string {
 }
 
 export default function SorteioPage() {
-  const { group, players, loading } = useGroup();
   const router = useRouter();
 
   const [query, setQuery] = useState('');
@@ -36,10 +35,7 @@ export default function SorteioPage() {
     clearLastResult();
   }, []);
 
-  const activePlayers = useMemo(
-    () => players.filter((p) => p.active),
-    [players],
-  );
+  const activePlayers = useMemo(() => ROSTER.filter((p) => p.active), []);
   const activeById = useMemo(
     () => new Map(activePlayers.map((p) => [p.id, p])),
     [activePlayers],
@@ -138,7 +134,6 @@ export default function SorteioPage() {
   }
 
   function runDraw(format: Format) {
-    if (!group) return;
     // count === total garantido: só formatos leftover === 0 aparecem.
     const seed = Date.now();
     const result = drawTeams(pool, format.numTeams, format.perTeam, seed);
@@ -180,11 +175,7 @@ export default function SorteioPage() {
           </ul>
         )}
 
-        {loading ? (
-          <p className="py-16 text-center text-sm text-slate-500">
-            Carregando jogadores…
-          </p>
-        ) : activePlayers.length === 0 ? (
+        {activePlayers.length === 0 ? (
           <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-line px-6 py-10 text-center">
             <p className="font-medium text-slate-200">
               Nenhum jogador ativo no elenco
@@ -255,17 +246,15 @@ export default function SorteioPage() {
         )}
       </div>
 
-      {!loading && (
-        <SortearFooter
-          count={count}
-          formats={formats}
-          onPick={runDraw}
-          onClear={() => {
-            setSelectedIds([]);
-            setGuests([]);
-          }}
-        />
-      )}
+      <SortearFooter
+        count={count}
+        formats={formats}
+        onPick={runDraw}
+        onClear={() => {
+          setSelectedIds([]);
+          setGuests([]);
+        }}
+      />
     </main>
   );
 }
