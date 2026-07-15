@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Anton, Manrope } from 'next/font/google';
 import './globals.css';
 import { MobileNav } from '@/components/ui/MobileNav';
+import { SplashScreen } from '@/components/ui/SplashScreen';
 import { ServiceWorkerRegister } from '@/components/ui/ServiceWorkerRegister';
 
 const anton = Anton({
@@ -43,6 +44,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${anton.variable} ${manrope.variable}`}>
       <body className="min-h-dvh pb-[calc(7rem+env(safe-area-inset-bottom))] font-body">
+        <SplashScreen />
         {children}
         <MobileNav />
         <ServiceWorkerRegister />
