@@ -2,12 +2,29 @@ import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import { HighlightCard, type HighlightPlayer } from '@/components/destaques/HighlightCard';
 
+/* O rating de cada carta é calculado na própria carta (média dos seis atributos):
+   ajuste os stats e o overall acompanha. Tiers especiais são declarados à mão. */
 const HIGHLIGHT_PLAYERS: HighlightPlayer[] = [
+  {
+    id: 'destaque-caixeta',
+    name: 'Caixeta',
+    role: 'GOAT',
+    foot: 'R',
+    image: '/Caixeta.png',
+    imageAlt: 'Caixeta, a lenda do grupo',
+    pace: 99,
+    shot: 99,
+    pass: 99,
+    dribble: 99,
+    defense: 97,
+    physical: 99,
+    accent: 'from-[#39301a] via-[#14100a] to-black',
+    tier: 'goat',
+  },
   {
     id: 'destaque-1',
     name: 'Carrara Ditador',
     role: 'ST',
-    rating: 88,
     foot: 'R',
     image: '/CarraraDitador.png',
     imageAlt: 'Carrara em uniforme militar',
@@ -17,13 +34,13 @@ const HIGHLIGHT_PLAYERS: HighlightPlayer[] = [
     dribble: 30,
     defense: 55,
     physical: 79,
-    accent: 'from-amber-100/60 via-rose-400/18 to-purple-950/35',
+    accent: 'from-[#fbf5e4] via-[#f0e3c2] to-[#cfae72]',
+    tier: 'icon',
   },
   {
     id: 'destaque-2',
     name: 'Aquino',
     role: 'Error',
-    rating: 22,
     foot: 'R',
     image: '/Aquino.png',
     imageAlt: 'Aquino magro.',
@@ -39,7 +56,6 @@ const HIGHLIGHT_PLAYERS: HighlightPlayer[] = [
     id: 'destaque-3',
     name: 'Aquino Ressaca',
     role: 'MEI',
-    rating: 75,
     foot: 'R',
     image: '/AquinoRessaca.png',
     imageAlt: 'Aquino Ressaca',
@@ -49,13 +65,13 @@ const HIGHLIGHT_PLAYERS: HighlightPlayer[] = [
     dribble: 21,
     defense: 40,
     physical: 12,
-    accent: 'from-lime-200/45 via-yellow-600/16 to-emerald-950/35',
+    accent: 'from-[#26241d] via-[#171512] to-[#070605]',
+    tier: 'totw',
   },
   {
     id: 'destaque-4',
     name: 'Nenzim',
     role: 'VOL',
-    rating: 82,
     foot: 'R',
     image: '/Nenzim.png',
     imageAlt: 'Nenzim.',
@@ -71,7 +87,6 @@ const HIGHLIGHT_PLAYERS: HighlightPlayer[] = [
     id: 'destaque-5',
     name: 'Safaad',
     role: 'ZAG',
-    rating: 83,
     foot: 'R',
     image: '/Safaad.png',
     imageAlt: 'Safaad.',
@@ -87,7 +102,6 @@ const HIGHLIGHT_PLAYERS: HighlightPlayer[] = [
     id: 'destaque-6',
     name: 'Cauê Ditador',
     role: 'CAM',
-    rating: 82,
     foot: 'R',
     image: '/CaueDitador.png',
     imageAlt: 'Cauê em uniforme militar',
@@ -129,7 +143,8 @@ export default function DestaquesPage() {
         </div>
       </header>
 
-      <section className="mt-6 grid gap-4">
+      {/* Duas colunas no celular: carta inteira cabe na tela, como a vitrine do clube no FIFA. */}
+      <section className="mt-6 grid grid-cols-2 gap-3">
         {HIGHLIGHT_PLAYERS.map((player) => (
           <HighlightCard key={player.id} player={player} />
         ))}
