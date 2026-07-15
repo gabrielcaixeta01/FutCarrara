@@ -1,19 +1,25 @@
 'use client';
 
 import type { Format } from '@/types';
+import { validFormats } from '@/lib/balance';
 
-/** Totais que fecham em times iguais, dentro de {2,3,4}×{5,6,7}. */
-const EXACT = [
-  { total: 10, label: '2×5' },
-  { total: 12, label: '2×6' },
-  { total: 14, label: '2×7' },
-  { total: 15, label: '3×5' },
-  { total: 18, label: '3×6' },
-  { total: 20, label: '4×5' },
-  { total: 21, label: '3×7' },
-  { total: 24, label: '4×6' },
-  { total: 28, label: '4×7' },
-] as const;
+/**
+ * Totais que fecham em times iguais, derivados do próprio balance.ts — a fonte
+ * única dos formatos. O `n` alto em validFormats é só pra enumerar todas as
+ * combinações; o total real é numTeams×perTeam. Empate de total fica com o
+ * arranjo de mais times (20 → 4×5, não “2×10”), como o sorteio prefere.
+ */
+const EXACT: readonly { total: number; label: string }[] = (() => {
+  const byTotal = new Map<number, string>();
+  const all = [...validFormats(999)].sort((a, b) => b.numTeams - a.numTeams);
+  for (const f of all) {
+    const total = f.numTeams * f.perTeam;
+    if (!byTotal.has(total)) byTotal.set(total, `${f.numTeams}×${f.perTeam}`);
+  }
+  return [...byTotal.entries()]
+    .map(([total, label]) => ({ total, label }))
+    .sort((a, b) => a.total - b.total);
+})();
 
 /** Aviso quando N não fecha: sugere o total exato mais próximo abaixo e acima. */
 function suggestion(n: number): string {

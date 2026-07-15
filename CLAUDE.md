@@ -22,7 +22,7 @@ Três camadas, sem vazamento entre elas:
 
 1. **`src/lib/balance.ts`** — lógica de sorteio. Funções **puras**. Sem React, sem `localStorage`, sem `Date.now()` implícito, sem `Math.random()` direto. A seed entra como parâmetro. É o coração do app e é o único lugar com cobertura de teste obrigatória.
 2. **`src/lib/roster.ts`** — o elenco. Lista **estática**, editada à mão no código. Não vem de storage, não é editável pelo app. É a fonte única de verdade dos jogadores.
-3. **`src/lib/storage.ts`** — único lugar que toca storage do navegador. Hoje só `sessionStorage`, e só pra levar o resultado de `/sorteio` até `/resultado`. **Nada do usuário é persistido.**
+3. **`src/lib/storage.ts`** — único lugar que toca storage do navegador. Hoje só `sessionStorage`, para dois dados transitórios: o resultado de `/sorteio` até `/resultado` e a seleção em andamento (sobrevive a reload, morre ao fechar o app). **Nada do usuário é persistido além da sessão.**
 4. **`src/app/` + `src/components/`** — UI. Não implementa regra de negócio; só chama `lib`.
 
 ## Regras invioláveis
@@ -86,4 +86,4 @@ uma boa ideia, elas já foram consideradas — pergunte antes de trazer de volta
 - **A ordem dos jogadores dentro do time exibido deve ser embaralhada.** Se sair ordenada por skill, o pessoal vai ler o ranking e reclamar.
 - **Balancear por soma só funciona com times do mesmo tamanho.** Como `perTeam` é fixo dentro de um sorteio, soma serve. Se algum dia os times puderem ter tamanhos diferentes, o custo precisa virar média — mas isso está fora do escopo hoje.
 - **`sessionStorage` é síncrono e só existe no client.** Todo acesso passa por `storage.ts` e roda dentro de `useEffect`, nunca no render. Componentes que dependem dele são `'use client'`. O elenco não tem esse problema: vem de `roster.ts`, é constante do bundle e pode ser lido no render.
-- **Não duplique regra de negócio na UI.** O `SortearFooter` tem uma tabela `EXACT` com os totais que fecham, escrita à mão — ela repete o `{2,3,4}×{5,6,7}` do `balance.ts`. É dívida conhecida: se mexer nos formatos, os dois lugares precisam mudar.
+- **Não duplique regra de negócio na UI.** A tabela `EXACT` do `SortearFooter` é derivada de `validFormats()` no load do módulo (UI chamando lib é permitido). Se mexer nos formatos do `balance.ts`, ela acompanha sozinha — não a reescreva à mão.
