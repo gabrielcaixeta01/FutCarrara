@@ -46,7 +46,7 @@ function MounjaroOverlay() {
   return (
     <div
       aria-hidden
-      className="splash-screen splash-screen--interactive"
+      className="splash-screen splash-screen--boot splash-screen--interactive"
       style={{ '--splash-duration': `${ANIMATION_DURATION_MS}ms` } as CSSProperties}
     >
       <div className="splash-screen__backdrop" />

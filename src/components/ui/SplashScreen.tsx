@@ -35,7 +35,7 @@ export function SplashScreen() {
       style={{ '--splash-duration': `${DEFAULT_DURATION_MS}ms` } as CSSProperties}
     >
       <div className="splash-screen__backdrop" />
-      <div className="splash-screen__card">
+      <div className="splash-screen__card splash-screen__card--boot">
         <Image
           src="/splash.webp"
           alt=""

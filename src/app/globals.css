@@ -59,11 +59,10 @@ body {
   animation: splash-screen-boot var(--splash-duration, 2800ms) ease-in forwards;
 }
 
-/* Easter egg: entra por cima do app já visível, então aqui o fade-in é o certo. */
+/* Easter egg: usa o mesmo ciclo da splash inicial para manter a animação idêntica. */
 .splash-screen--interactive {
   z-index: 70;
-  animation: splash-screen-interactive var(--splash-duration, 2800ms) ease-in-out
-    forwards;
+  animation: splash-screen-boot var(--splash-duration, 2800ms) ease-in forwards;
 }
 
 .splash-screen__backdrop {
@@ -77,16 +76,43 @@ body {
 .splash-screen__card {
   position: relative;
   z-index: 1;
-  width: min(72vw, 18rem);
   aspect-ratio: 1;
-  border-radius: 2rem;
-  overflow: hidden;
-  box-shadow: 0 24px 80px -30px rgb(0 0 0 / 0.85);
   animation: splash-screen-zoom var(--splash-duration, 2800ms) forwards;
 }
 
+/* Abertura em tela cheia. A figurinha tem canvas 512x512, mas só uma faixa
+   central é opaca — medido: conteúdo 290x512, ou 56.6% da largura. Para o rosto
+   encostar nas bordas da tela o canvas precisa ser MAIOR que a viewport; as
+   margens transparentes sobram para fora e ninguém vê. Dividir pelo pico de
+   escala evita que o rosto vaze no fim, quando o zoom chega a 1.05.
+   O limite por 100dvh segura o caso paisagem, onde a altura é que aperta. */
+.splash-screen__card--boot {
+  --sticker-content-ratio: 0.566;
+  --sticker-peak-scale: 1.05;
+  width: min(
+    calc(100vw / var(--sticker-content-ratio) / var(--sticker-peak-scale)),
+    100dvh
+  );
+  /* Centralizado na mão: o card é mais largo que a viewport de propósito, e o
+     `place-items: center` do grid prende item que transborda no início em vez
+     de centralizar (alinhamento "seguro"), o que jogava o rosto para a direita.
+     `translate` é aplicado antes de `transform`, então não briga com o zoom. */
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+}
+
+.splash-screen__card--boot .splash-screen__image {
+  object-fit: contain;
+}
+
+/* Easter egg: entra como popup sobre o app, então mantém cara de card. */
 .splash-screen__card--interactive {
   width: min(74vw, 19rem);
+  border-radius: 2rem;
+  overflow: hidden;
+  box-shadow: 0 24px 80px -30px rgb(0 0 0 / 0.85);
 }
 
 .splash-screen__image {
@@ -97,24 +123,6 @@ body {
 
 @keyframes splash-screen-boot {
   0%,
-  84% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes splash-screen-interactive {
-  0% {
-    opacity: 0;
-  }
-
-  8% {
-    opacity: 1;
-  }
-
   84% {
     opacity: 1;
   }
@@ -209,8 +217,11 @@ body {
   }
 
   .splash-screen--boot,
-  .splash-screen--interactive,
   .splash-screen__card {
+    animation: none;
+  }
+
+  .splash-screen--interactive {
     animation: none;
   }
 }
