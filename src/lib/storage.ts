@@ -1,9 +1,11 @@
 /**
- * Único módulo que toca storage do navegador — hoje só o sessionStorage, e só
- * pra carregar o resultado do sorteio de /sorteio até /resultado.
+ * Único módulo que toca storage do navegador — hoje só o sessionStorage, para
+ * dois dados transitórios: o resultado do sorteio (de /sorteio até /resultado)
+ * e a seleção em andamento (sobrevive a um reload acidental no meio dos toques).
+ * Os dois morrem quando o app fecha.
  *
  * O elenco NÃO passa por aqui: é lista estática em `lib/roster.ts`, editada no
- * código. O app não persiste nada do usuário.
+ * código. O app não persiste nada do usuário além da sessão.
  *
  * Regras (CLAUDE.md):
  * - Nenhum acesso no top-level (quebraria o SSR do Next); só em useEffect/handler.
@@ -13,6 +15,7 @@
 import type { Player, Skill, Team, DrawResult } from '@/types';
 
 const RESULT_KEY = 'futcarrara:lastResult';
+const SELECTION_KEY = 'futcarrara:selection';
 
 /** sessionStorage para o resultado do sorteio (transitório, some ao fechar). */
 function ss(): Storage | null {
@@ -116,6 +119,58 @@ export function clearLastResult(): void {
   if (!store) return;
   try {
     store.removeItem(RESULT_KEY);
+  } catch {
+    // best-effort.
+  }
+}
+
+// --- Seleção em andamento (transitória) --------------------------------------
+// Ids do elenco marcados + visitantes da tela de sorteio. Um reload no meio da
+// seleção (troca de app no celular recarrega a página) não apaga 20 toques.
+
+export interface DrawSelection {
+  selectedIds: string[];
+  guests: Player[];
+}
+
+function isDrawSelection(v: unknown): v is DrawSelection {
+  return (
+    isRecord(v) &&
+    Array.isArray(v.selectedIds) &&
+    v.selectedIds.every((id) => typeof id === 'string') &&
+    Array.isArray(v.guests) &&
+    v.guests.every(isPlayer)
+  );
+}
+
+export function saveSelection(selection: DrawSelection): void {
+  const store = ss();
+  if (!store) return;
+  try {
+    store.setItem(SELECTION_KEY, JSON.stringify(selection));
+  } catch {
+    // best-effort.
+  }
+}
+
+export function loadSelection(): DrawSelection | null {
+  const store = ss();
+  if (!store) return null;
+  try {
+    const raw = store.getItem(SELECTION_KEY);
+    if (raw === null) return null;
+    const parsed: unknown = JSON.parse(raw);
+    return isDrawSelection(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export function clearSelection(): void {
+  const store = ss();
+  if (!store) return;
+  try {
+    store.removeItem(SELECTION_KEY);
   } catch {
     // best-effort.
   }

@@ -4,6 +4,15 @@ import type { DrawResult } from '@/types';
 const TEAM_EMOJI = ['🟦', '🟥', '🟨', '🟪'] as const;
 
 /**
+ * Código curto e legível da seed (base36). O sorteio é determinístico dada a
+ * seed, então publicar o código torna o resultado auditável: mesma seed,
+ * mesmos times — ninguém pode acusar o admin de roubar.
+ */
+export function drawCode(seed: number): string {
+  return seed.toString(36).toUpperCase();
+}
+
+/**
  * Formata o resultado como texto pronto pra colar no grupo.
  *
  * ⚽ FUTEBOL CARRARA
@@ -16,6 +25,8 @@ const TEAM_EMOJI = ['🟦', '🟥', '🟨', '🟪'] as const;
  *
  * ▶️ Começam: Time 1 x Time 3
  * ⏭️ Próximo: Time 2
+ *
+ * 🎲 Sorteio #ABC123
  *
  * NÃO inclui skill, soma nem média. Isso é informação interna do admin.
  */
@@ -37,6 +48,8 @@ export function formatForWhatsApp(result: DrawResult, groupName: string): string
       lines.push(`⏭️ Próximo: Time ${result.next + 1}`);
     }
   }
+
+  lines.push('', `🎲 Sorteio #${drawCode(result.seed)}`);
 
   return lines.join('\n');
 }

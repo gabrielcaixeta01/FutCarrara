@@ -6,7 +6,12 @@ import Link from 'next/link';
 import type { Format, Player, Skill } from '@/types';
 import { ROSTER } from '@/lib/roster';
 import { drawTeams, validFormats } from '@/lib/balance';
-import { clearLastResult, saveLastResult } from '@/lib/storage';
+import {
+  clearLastResult,
+  loadSelection,
+  saveLastResult,
+  saveSelection,
+} from '@/lib/storage';
 import { uid } from '@/lib/utils';
 import { LEVELS_DESC, isHalf, levelName, levelOf } from '@/lib/levels';
 import { PlayerTile } from '@/components/sorteio/PlayerTile';
@@ -30,10 +35,25 @@ export default function SorteioPage() {
   const [query, setQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [guests, setGuests] = useState<Player[]>([]);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     clearLastResult();
+    // Recupera a seleção da sessão: um reload acidental (troca de app no
+    // celular) não apaga os toques. Morre quando o app fecha.
+    const stored = loadSelection();
+    if (stored) {
+      setSelectedIds(stored.selectedIds);
+      setGuests(stored.guests);
+    }
+    setHydrated(true);
   }, []);
+
+  // Só salva depois de hidratar, senão o estado inicial vazio atropela o salvo.
+  useEffect(() => {
+    if (!hydrated) return;
+    saveSelection({ selectedIds, guests });
+  }, [hydrated, selectedIds, guests]);
 
   const activePlayers = useMemo(() => ROSTER.filter((p) => p.active), []);
   const activeById = useMemo(

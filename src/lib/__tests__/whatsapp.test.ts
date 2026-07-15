@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatForWhatsApp } from '../whatsapp';
+import { drawCode, formatForWhatsApp } from '../whatsapp';
 import type { DrawResult, Team, Player, Skill } from '@/types';
 
 const player = (name: string, skill: Skill, guest?: true): Player => ({
@@ -46,8 +46,24 @@ describe('formatForWhatsApp', () => {
         '',
         '🟥 TIME 2',
         'Carla, Diego',
+        '',
+        '🎲 Sorteio #1',
       ].join('\n'),
     );
+  });
+
+  it('publica o código da seed (auditável)', () => {
+    const r = { ...result([team([player('A', 3)]), team([player('B', 3)])]), seed: 1752614400000 };
+    expect(formatForWhatsApp(r, 'Grupo')).toContain(
+      `🎲 Sorteio #${drawCode(1752614400000)}`,
+    );
+  });
+
+  it('drawCode é base36 legível e reconstrói a seed', () => {
+    const seed = 1752614400000;
+    const code = drawCode(seed);
+    expect(code).toMatch(/^[0-9A-Z]+$/);
+    expect(parseInt(code, 36)).toBe(seed);
   });
 
   it('não vaza skill, soma nem média', () => {

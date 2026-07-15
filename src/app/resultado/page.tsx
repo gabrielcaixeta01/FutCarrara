@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Check, Copy, Eye, EyeOff, RefreshCw } from 'lucide-react';
+import { Check, Copy, Eye, EyeOff, RefreshCw, Share2 } from 'lucide-react';
 import type { DrawResult } from '@/types';
 import { drawTeams, rerollStarters } from '@/lib/balance';
 import { loadLastResult, saveLastResult } from '@/lib/storage';
 import { GROUP_NAME } from '@/lib/roster';
-import { formatForWhatsApp } from '@/lib/whatsapp';
+import { drawCode, formatForWhatsApp } from '@/lib/whatsapp';
 import { TeamCard } from '@/components/resultado/TeamCard';
 import { StartersBanner } from '@/components/resultado/StartersBanner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
@@ -18,21 +18,37 @@ export default function ResultadoPage() {
   const [showLevels, setShowLevels] = useState(false);
   const [copied, setCopied] = useState(false);
   const [confirmReshuffle, setConfirmReshuffle] = useState(false);
+  const [canShare, setCanShare] = useState(false);
 
   // sessionStorage só existe no client: por isso o resultado entra num effect.
+  // navigator idem — e decidir o rótulo do botão no render quebraria a hidratação.
   useEffect(() => {
     setResult(loadLastResult());
     setLoading(false);
+    setCanShare(typeof navigator !== 'undefined' && !!navigator.share);
   }, []);
 
-  async function copyToWhatsApp() {
+  async function sendToWhatsApp() {
     if (!result) return;
+    const text = formatForWhatsApp(result, GROUP_NAME);
+
+    // Folha de compartilhamento nativa (celular): um toque até o WhatsApp.
+    if (canShare) {
+      try {
+        await navigator.share({ text });
+        return;
+      } catch (err) {
+        // Fechar a folha sem escolher app não é erro — e não merece fallback.
+        if (err instanceof DOMException && err.name === 'AbortError') return;
+      }
+    }
+
     try {
-      await navigator.clipboard.writeText(formatForWhatsApp(result, GROUP_NAME));
+      await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Sem permissão de clipboard: não trava o app.
+      // Sem share nem clipboard: não trava o app.
     }
   }
 
@@ -104,18 +120,29 @@ export default function ResultadoPage() {
             ))}
           </div>
 
+          {/* A seed publicada torna o sorteio auditável: mesma seed, mesmos times. */}
+          <p className="text-center text-xs text-ink-soft/80">
+            Sorteio #{drawCode(result.seed)}
+          </p>
+
           <div className="space-y-3 pt-2">
             <button
               type="button"
-              onClick={copyToWhatsApp}
+              onClick={sendToWhatsApp}
               className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-grass font-semibold text-pitch transition-colors hover:bg-grass-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-grass-soft"
             >
               {copied ? (
                 <Check className="size-5" />
+              ) : canShare ? (
+                <Share2 className="size-5" />
               ) : (
                 <Copy className="size-5" />
               )}
-              {copied ? 'Copiado!' : 'Copiar pra WhatsApp'}
+              {copied
+                ? 'Copiado!'
+                : canShare
+                  ? 'Mandar pro grupo'
+                  : 'Copiar pra WhatsApp'}
             </button>
             <button
               type="button"
