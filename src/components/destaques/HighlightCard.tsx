@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { ratingOf, type HighlightPlayer } from '@/lib/highlights';
 
 export interface HighlightStat {
   label: string;
@@ -8,24 +9,6 @@ export interface HighlightStat {
 
 export type HighlightTier = 'bronze' | 'silver' | 'gold' | 'icon' | 'totw' | 'goat';
 
-export interface HighlightPlayer {
-  id: string;
-  name: string;
-  role: string;
-  foot: string;
-  image?: string;
-  imageAlt?: string;
-  pace: number;
-  shot: number;
-  pass: number;
-  dribble: number;
-  defense: number;
-  physical: number;
-  accent: string;
-  /** Versões especiais declaradas à mão. Sem tier, a régua do rating decide. */
-  tier?: 'icon' | 'totw' | 'goat';
-}
-
 interface Props {
   player: HighlightPlayer;
 }
@@ -33,18 +16,6 @@ interface Props {
 /** Silhueta da carta: cantos chanfrados, no espírito das cartas do Ultimate Team. */
 const CARD_SHAPE =
   'polygon(9% 0, 91% 0, 100% 4.5%, 100% 91%, 89% 100%, 11% 100%, 0 91%, 0 4.5%)';
-
-/** Rating = média simples dos seis atributos: mexeu no stat, o overall acompanha. */
-export function ratingOf(player: HighlightPlayer): number {
-  const sum =
-    player.pace +
-    player.shot +
-    player.pass +
-    player.dribble +
-    player.defense +
-    player.physical;
-  return Math.round(sum / 6);
-}
 
 /** Régua do FIFA: bronze até 64, prata até 74, ouro dali pra cima. */
 function tierOf(player: HighlightPlayer, rating: number): HighlightTier {
