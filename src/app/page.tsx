@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import {
-  Award,
   ChevronRight,
   Shuffle,
   Star,
@@ -30,27 +29,17 @@ export default function HomePage() {
       </div>
 
       <header className="space-y-4">
-        <p className="text-xs font-bold uppercase tracking-[0.28em] text-grass-soft">
-          Pelada do grupo
-        </p>
         <h1 className="font-display text-[4.25rem] uppercase leading-[0.82] tracking-tight text-ink">
           Fut
           <br />
           Carrara
         </h1>
         <p className="max-w-xs text-sm text-ink-soft">
-          Marque quem chegou e tire times equilibrados em segundos.
+          Fim da Panelinha do Carrara.
         </p>
       </header>
 
       <nav className="mt-12 space-y-3">
-        <HomeCard
-          href="/destaques"
-          icon={Star}
-          title="Jogadores Destaque"
-          desc="Veja as cartas estilo FIFA dos principais nomes."
-          accent
-        />
         <HomeCard
           href="/sorteio"
           icon={Shuffle}
@@ -64,11 +53,15 @@ export default function HomePage() {
           title="Elenco"
           desc="Veja o grupo e os níveis."
         />
+        <HomeCard
+          href="/destaques"
+          icon={Star}
+          title="Jogadores Destaque"
+          desc="Veja as cartas dos principais nomes."
+          accent
+        />
       </nav>
 
-      <p className="mt-auto pb-10 pt-8 text-center text-xs text-ink-soft/70">
-        Times equilibrados, sem discussão.
-      </p>
     </main>
   );
 }
