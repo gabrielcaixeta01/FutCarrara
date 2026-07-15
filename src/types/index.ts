@@ -46,6 +46,8 @@ export interface DrawResult {
   spread: number;
   /** Índices dos 2 times que começam. Só quando numTeams >= 3. */
   starters?: [number, number];
+  /** Índice do próximo time a entrar — o 3º da mesma ordem que define os starters. */
+  next?: number;
   /** Seed usada para sortear os starters. Presente sempre que starters existir. */
   starterSeed?: number;
 }

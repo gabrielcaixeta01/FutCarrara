@@ -9,11 +9,10 @@ import { teamColor } from './teamColors';
 interface Props {
   index: number;
   team: Team;
-  isStarter: boolean;
   showLevels: boolean;
 }
 
-export function TeamCard({ index, team, isStarter, showLevels }: Props) {
+export function TeamCard({ index, team, showLevels }: Props) {
   const color = teamColor(index);
 
   return (
@@ -21,15 +20,20 @@ export function TeamCard({ index, team, isStarter, showLevels }: Props) {
       className={cn('rounded-2xl border bg-pitch-soft p-4', color.border)}
     >
       <header className="mb-3 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <span className={cn('size-3 rounded-full', color.dot)} />
-          <h2 className={cn('font-bold', color.text)}>Time {index + 1}</h2>
-          {isStarter && (
-            <span className="rounded-full bg-grass/20 px-2 py-0.5 text-xs font-medium text-grass-soft">
-              começa
-            </span>
-          )}
+        <div className="flex min-w-0 items-center gap-2">
+          <span className={cn('size-3 shrink-0 rounded-full', color.dot)} />
+          <h2 className={cn('truncate font-bold', color.text)}>
+            Time {index + 1}
+          </h2>
         </div>
+        {showLevels && (
+          <span
+            title="média do time"
+            className="shrink-0 text-xs font-medium tabular-nums text-slate-500"
+          >
+            {team.avg.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}
+          </span>
+        )}
       </header>
 
       <ul className="space-y-1.5">

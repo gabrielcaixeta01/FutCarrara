@@ -4,18 +4,27 @@ import { Shuffle } from 'lucide-react';
 
 interface Props {
   starters: [number, number];
+  /** Próximo time a entrar. Ausente quando não há times de fora. */
+  next?: number;
   onReroll: () => void;
 }
 
 /** Destaque de quem começa + re-sorteio só dos starters (times intactos). */
-export function StartersBanner({ starters, onReroll }: Props) {
+export function StartersBanner({ starters, next, onReroll }: Props) {
   const [a, b] = starters;
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-grass/40 bg-grass/10 px-4 py-3">
-      <p className="text-sm text-slate-200">
-        <span className="font-semibold text-grass-soft">Começam:</span> Time{' '}
-        {a + 1} × Time {b + 1}
-      </p>
+      <div className="space-y-0.5">
+        <p className="text-sm text-slate-200">
+          <span className="font-semibold text-grass-soft">Começam:</span> Time{' '}
+          {a + 1} × Time {b + 1}
+        </p>
+        {next !== undefined && (
+          <p className="text-xs text-slate-400">
+            Próximo a entrar: Time {next + 1}
+          </p>
+        )}
+      </div>
       <button
         type="button"
         onClick={onReroll}

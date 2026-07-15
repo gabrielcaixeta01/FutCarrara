@@ -150,7 +150,9 @@ export function drawTeams(
   if (numTeams >= 3) {
     // Deriva da seed dos times (mas não a seed crua) quando não vem de fora.
     const ss = starterSeed ?? ((s ^ 0x9e3779b9) >>> 0);
-    result.starters = pickStarters(numTeams, ss);
+    const rotation = pickRotation(numTeams, ss);
+    result.starters = [rotation[0]!, rotation[1]!];
+    result.next = rotation[2]!;
     result.starterSeed = ss;
   }
 
@@ -167,21 +169,31 @@ export function rerollStarters(
   starterSeed: number,
 ): DrawResult {
   if (result.teams.length < 3) return result;
+  const rotation = pickRotation(result.teams.length, starterSeed);
   return {
     ...result,
-    starters: pickStarters(result.teams.length, starterSeed),
+    starters: [rotation[0]!, rotation[1]!],
+    next: rotation[2]!,
     starterSeed,
   };
 }
 
-/** Sorteia os 2 times que começam. Só faz sentido com numTeams >= 3. */
-export function pickStarters(numTeams: number, seed: number): [number, number] {
+/**
+ * Ordem de entrada dos times, sorteada. Os 2 primeiros começam, o 3º é o
+ * próximo a entrar. Só faz sentido com numTeams >= 3.
+ */
+export function pickRotation(numTeams: number, seed: number): number[] {
   const rng = mulberry32(seed);
-  const order = shuffle(
+  return shuffle(
     Array.from({ length: numTeams }, (_, i) => i),
     rng,
   );
-  return [order[0]!, order[1]!];
+}
+
+/** Sorteia os 2 times que começam. Só faz sentido com numTeams >= 3. */
+export function pickStarters(numTeams: number, seed: number): [number, number] {
+  const rotation = pickRotation(numTeams, seed);
+  return [rotation[0]!, rotation[1]!];
 }
 
 /**

@@ -19,11 +19,16 @@ const team = (players: Player[]): Team => {
   };
 };
 
-const result = (teams: Team[], starters?: [number, number]): DrawResult => ({
+const result = (
+  teams: Team[],
+  starters?: [number, number],
+  next?: number,
+): DrawResult => ({
   teams,
   seed: 1,
   spread: 0,
   ...(starters ? { starters } : {}),
+  ...(next !== undefined ? { next } : {}),
 });
 
 describe('formatForWhatsApp', () => {
@@ -84,5 +89,36 @@ describe('formatForWhatsApp', () => {
   it('omite a linha de quem começa com 2 times', () => {
     const r = result([team([player('A', 3)]), team([player('B', 3)])]);
     expect(formatForWhatsApp(r, 'Grupo')).not.toMatch(/Começam/);
+  });
+
+  it('inclui o próximo a entrar logo abaixo de quem começa', () => {
+    const r = result(
+      [
+        team([player('A', 3)]),
+        team([player('B', 3)]),
+        team([player('C', 3)]),
+        team([player('D', 3)]),
+      ],
+      [1, 2],
+      3,
+    );
+    expect(formatForWhatsApp(r, 'Grupo')).toContain(
+      ['▶️ Começam: Time 2 x Time 3', '⏭️ Próximo: Time 4'].join('\n'),
+    );
+  });
+
+  it('omite o próximo quando não há', () => {
+    const r = result([team([player('A', 3)]), team([player('B', 3)])]);
+    expect(formatForWhatsApp(r, 'Grupo')).not.toMatch(/Próximo/);
+  });
+
+  it('nunca vaza nível nem média', () => {
+    const r = result(
+      [team([player('A', 5), player('B', 4.5)]), team([player('C', 3)])],
+      [0, 1],
+      1,
+    );
+    const text = formatForWhatsApp(r, 'Grupo');
+    expect(text).not.toMatch(/média|Monstro|4\.5|9\.5/i);
   });
 });

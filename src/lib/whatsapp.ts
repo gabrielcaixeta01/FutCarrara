@@ -15,8 +15,9 @@ const TEAM_EMOJI = ['🟦', '🟥', '🟨', '🟪'] as const;
  * ...
  *
  * ▶️ Começam: Time 1 x Time 3
+ * ⏭️ Próximo: Time 2
  *
- * NÃO inclui skill nem soma. Isso é informação interna do admin.
+ * NÃO inclui skill, soma nem média. Isso é informação interna do admin.
  */
 export function formatForWhatsApp(result: DrawResult, groupName: string): string {
   const lines: string[] = [`⚽ ${groupName.toUpperCase()}`];
@@ -32,6 +33,9 @@ export function formatForWhatsApp(result: DrawResult, groupName: string): string
   if (result.starters) {
     const [a, b] = result.starters;
     lines.push('', `▶️ Começam: Time ${a + 1} x Time ${b + 1}`);
+    if (result.next !== undefined) {
+      lines.push(`⏭️ Próximo: Time ${result.next + 1}`);
+    }
   }
 
   return lines.join('\n');

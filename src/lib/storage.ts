@@ -202,6 +202,7 @@ function isDrawResult(v: unknown): v is DrawResult {
     typeof v.seed === 'number' &&
     typeof v.spread === 'number' &&
     (v.starters === undefined || isStarters(v.starters)) &&
+    (v.next === undefined || typeof v.next === 'number') &&
     (v.starterSeed === undefined || typeof v.starterSeed === 'number')
   );
 }

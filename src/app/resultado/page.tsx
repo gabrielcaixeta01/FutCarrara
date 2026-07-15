@@ -169,19 +169,14 @@ export default function ResultadoPage() {
           {result.starters && (
             <StartersBanner
               starters={result.starters}
+              next={result.next}
               onReroll={rerollStartersHandler}
             />
           )}
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {result.teams.map((team, i) => (
-              <TeamCard
-                key={i}
-                index={i}
-                team={team}
-                isStarter={result.starters?.includes(i) ?? false}
-                showLevels={showLevels}
-              />
+              <TeamCard key={i} index={i} team={team} showLevels={showLevels} />
             ))}
           </div>
 

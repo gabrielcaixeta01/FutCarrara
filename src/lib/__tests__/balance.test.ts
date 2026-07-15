@@ -103,6 +103,53 @@ describe('rerollStarters', () => {
     expect(a).toEqual(b);
     expect(a.starterSeed).toBe(7);
   });
+
+  it('rerolla o próximo junto com os starters', () => {
+    const r = drawTeams(pool3, 3, 6, 10);
+    const after = rerollStarters(r, 77);
+    expect(after.next).toBeTypeOf('number');
+    expect(after.next).toBe(rerollStarters(r, 77).next);
+    expect(after.starters).not.toContain(after.next);
+  });
+});
+
+describe('next (próximo time a entrar)', () => {
+  const pool4 = mk([5, 5, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2, 1, 1, 1, 1, 0, 0, 0]);
+  const pool3 = mk([5, 5, 5, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2, 1, 1, 1, 0]);
+
+  it('com 4 times, é um time válido que não está começando', () => {
+    for (let seed = 0; seed < 30; seed++) {
+      const r = drawTeams(pool4, 4, 5, seed);
+      expect(r.next).toBeGreaterThanOrEqual(0);
+      expect(r.next).toBeLessThan(4);
+      expect(r.starters).not.toContain(r.next);
+    }
+  });
+
+  it('com 3 times, é o único time que sobra', () => {
+    const r = drawTeams(pool3, 3, 6, 10);
+    const [a, b] = r.starters!;
+    expect(r.next).toBe([0, 1, 2].find((i) => i !== a && i !== b));
+  });
+
+  it('com 2 times não existe', () => {
+    const r = drawTeams(mk([5, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1, 0]), 2, 6, 10);
+    expect(r.next).toBeUndefined();
+    expect(rerollStarters(r, 999).next).toBeUndefined();
+  });
+
+  it('starterSeeds diferentes eventualmente dão próximos diferentes', () => {
+    const r = drawTeams(pool4, 4, 5, 10);
+    const base = rerollStarters(r, 0).next;
+    let differ = false;
+    for (let s = 1; s < 50; s++) {
+      if (rerollStarters(r, s).next !== base) {
+        differ = true;
+        break;
+      }
+    }
+    expect(differ).toBe(true);
+  });
 });
 
 describe('validFormats', () => {
