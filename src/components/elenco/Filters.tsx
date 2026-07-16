@@ -49,9 +49,9 @@ export function Filters({
               disabled={count === 0 && !selected}
               aria-pressed={selected}
               className={cn(
-                'flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors disabled:opacity-40',
+                'flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-all active:scale-[0.96] disabled:opacity-40',
                 selected
-                  ? 'border-grass bg-grass/20 text-grass-soft'
+                  ? 'border-grass bg-grass font-medium text-pitch'
                   : 'border-line bg-pitch-soft text-ink-soft hover:border-ink-soft/40',
               )}
             >
@@ -59,7 +59,7 @@ export function Filters({
               <span
                 className={cn(
                   'tabular-nums text-xs',
-                  selected ? 'text-grass-soft' : 'text-ink-soft/75',
+                  selected ? 'text-pitch/70' : 'text-ink-soft/75',
                 )}
               >
                 {count}
