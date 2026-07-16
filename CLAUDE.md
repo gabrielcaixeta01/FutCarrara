@@ -12,6 +12,7 @@ App de sorteio de times de futebol. Single-user (só o admin opera), offline-fir
 npm run dev      # dev server
 npm test         # vitest (roda em watch)
 npm run test:run # vitest single run
+npm run test:e2e # smoke do fluxo no navegador (rode npm run build antes)
 npm run lint
 npm run build    # static export → ./out
 ```
