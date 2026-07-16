@@ -34,7 +34,7 @@ export function GuestAdder({ onAdd }: Props) {
         className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-line font-medium text-ink-soft transition-colors hover:border-grass hover:text-grass-soft"
       >
         <Plus className="size-5" />
-        Visitante
+        Adicionar visitante
       </button>
     );
   }

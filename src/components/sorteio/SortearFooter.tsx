@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Shuffle } from 'lucide-react';
 import type { Format } from '@/types';
 import { validFormats } from '@/lib/balance';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
@@ -23,14 +24,14 @@ const EXACT: readonly { total: number; label: string }[] = (() => {
     .sort((a, b) => a.total - b.total);
 })();
 
-/** Aviso quando N não fecha: sugere o total exato mais próximo abaixo e acima. */
+/** Instrução acionável quando N não fecha: o que fazer pra chegar num total exato. */
 function suggestion(n: number): string {
   const below = [...EXACT].reverse().find((e) => e.total < n);
   const above = EXACT.find((e) => e.total > n);
   const parts: string[] = [];
-  if (below) parts.push(`${below.total} (${below.label})`);
-  if (above) parts.push(`${above.total} (${above.label})`);
-  return `${n} não fecha em times iguais — selecione ${parts.join(' ou ')}.`;
+  if (below) parts.push(`tire ${n - below.total} (${below.label})`);
+  if (above) parts.push(`chame +${above.total - n} (${above.label})`);
+  return `${n} não fecha em times iguais — ${parts.join(' ou ')}.`;
 }
 
 interface Props {
@@ -41,67 +42,63 @@ interface Props {
   onClear: () => void;
 }
 
-/** Barra fixa: contador + formatos exatos (ou aviso quando nada fecha). */
+/**
+ * Barra fixa de status + ação. Dentro de {2,3,4}×{5,6,7} cada total fecha em
+ * no máximo UM formato, então isto nunca é uma escolha entre botões: quando
+ * fecha, existe um único CTA grande de sortear; quando não fecha, uma
+ * instrução do que mudar. Sempre visível, pra tela ter um lugar só de status.
+ */
 export function SortearFooter({ count, formats, onPick, onClear }: Props) {
   // Limpar descarta dezenas de toques (e visitantes configurados) de uma vez:
   // vale uma pausa antes de acontecer.
   const [confirmClear, setConfirmClear] = useState(false);
 
-  const content = (
-    <>
-      <div className="flex items-center justify-between">
-        <span className="text-base">
-          <span className="font-bold text-grass-soft">{count}</span>{' '}
-          <span className="text-ink-soft">selecionados</span>
-        </span>
-        {count > 0 && (
-          <button
-            type="button"
-            onClick={() => setConfirmClear(true)}
-            className="text-sm text-ink-soft underline-offset-2 hover:text-ink hover:underline"
-          >
-            Limpar
-          </button>
-        )}
-      </div>
-
-      {formats.length > 0 ? (
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {formats.map((f) => (
-            <button
-              key={`${f.numTeams}x${f.perTeam}`}
-              type="button"
-              onClick={() => onPick(f)}
-              className="h-12 shrink-0 rounded-xl bg-grass px-5 font-semibold text-pitch transition-colors hover:bg-grass-soft"
-            >
-              {f.numTeams}×{f.perTeam}
-            </button>
-          ))}
-        </div>
-      ) : (
-        <p className="pb-1 text-sm text-ink-soft">
-          {count === 0
-            ? 'Toque nos jogadores que vão jogar.'
-            : suggestion(count)}
-        </p>
-      )}
-    </>
-  );
+  const format = formats[0];
 
   return (
     <>
-      {count === 0 ? (
-        <div className="mt-4 rounded-2xl border border-line bg-pitch-soft px-4 py-3">
-          {content}
+      <div className="fixed inset-x-0 bottom-[calc(7rem+env(safe-area-inset-bottom))] z-20 mx-auto max-w-md px-4">
+        <div className="space-y-2 rounded-2xl border border-line/70 bg-pitch-soft/95 p-3 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.85)] backdrop-blur-xl">
+          <div className="flex items-center justify-between text-sm">
+            <span>
+              <span className="font-bold tabular-nums text-grass-soft">
+                {count}
+              </span>{' '}
+              <span className="text-ink-soft">
+                {count === 1 ? 'selecionado' : 'selecionados'}
+              </span>
+            </span>
+            {count > 0 && (
+              <button
+                type="button"
+                onClick={() => setConfirmClear(true)}
+                className="text-sm text-ink-soft underline-offset-2 hover:text-ink hover:underline"
+              >
+                Limpar
+              </button>
+            )}
+          </div>
+
+          {format ? (
+            <button
+              type="button"
+              onClick={() => onPick(format)}
+              className="flex h-14 w-full items-center justify-center gap-2.5 rounded-xl bg-grass text-pitch transition-all hover:bg-grass-soft active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-grass-soft"
+            >
+              <Shuffle className="size-6" strokeWidth={2.5} />
+              <span className="font-display text-2xl uppercase leading-none tracking-wide">
+                Sortear {format.numTeams}×{format.perTeam}
+              </span>
+            </button>
+          ) : (
+            <p className="pb-0.5 text-sm text-ink-soft">
+              {count === 0
+                ? 'Toque em quem vai jogar hoje.'
+                : suggestion(count)}
+            </p>
+          )}
         </div>
-      ) : (
-        <div
-          className="fixed inset-x-0 bottom-[calc(7rem+env(safe-area-inset-bottom))] z-20 mx-auto max-w-md space-y-3 border-t border-line bg-pitch/95 px-4 pt-3 backdrop-blur"
-          style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
-        >
-          {content}
-        </div>
-      )}
+      </div>
 
       <ConfirmDialog
         open={confirmClear}

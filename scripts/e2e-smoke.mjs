@@ -83,7 +83,7 @@ try {
   );
 
   // --- Sorteia 2×5 -----------------------------------------------------------
-  await page.locator('button', { hasText: /^2×5$/ }).click();
+  await page.locator('button', { hasText: /Sortear 2×5/ }).click();
   await page.waitForURL('**/resultado', { timeout: 5000 });
   await page.waitForTimeout(SPLASH_MS);
 

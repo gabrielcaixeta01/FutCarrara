@@ -9,11 +9,18 @@ interface Props {
   label: string;
   count: number;
   /** Quando presente, vira "selecionar todos" tri-state (uso no /sorteio). */
-  selection?: { state: SelectionState; onToggleAll: () => void };
+  selection?: {
+    state: SelectionState;
+    onToggleAll: () => void;
+    /** Quantos do grupo já estão marcados — vira "2 de 4" no header. */
+    selectedCount: number;
+  };
 }
 
 /** Header de grupo de nível: rótulo + contagem, com checkbox opcional. */
 export function LevelGroupHeader({ label, count, selection }: Props) {
+  const hasSelected = selection !== undefined && selection.selectedCount > 0;
+
   const inner = (
     <>
       {selection && (
@@ -35,8 +42,15 @@ export function LevelGroupHeader({ label, count, selection }: Props) {
         {label}
       </span>
       <span className="h-px flex-1 bg-line" />
-      <span className="text-xs font-medium text-ink-soft">
-        {count} {count === 1 ? 'jogador' : 'jogadores'}
+      <span
+        className={cn(
+          'text-xs font-medium tabular-nums',
+          hasSelected ? 'text-grass-soft' : 'text-ink-soft',
+        )}
+      >
+        {hasSelected
+          ? `${selection.selectedCount} de ${count}`
+          : `${count} ${count === 1 ? 'jogador' : 'jogadores'}`}
       </span>
     </>
   );

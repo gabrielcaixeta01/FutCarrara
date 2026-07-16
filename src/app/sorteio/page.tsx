@@ -162,18 +162,13 @@ export default function SorteioPage() {
   }
 
   return (
-    <main className="mx-auto min-h-dvh max-w-md pb-44 sm:pb-16">
+    // pb-60: o rodapé de status agora é sempre fixo — o conteúdo precisa
+    // de folga pra ele + a navegação. O contador vive só lá embaixo.
+    <main className="mx-auto min-h-dvh max-w-md pb-60 sm:pb-16">
       <header className="sticky top-0 z-20 space-y-4 border-b border-line/70 bg-pitch/85 px-4 pb-4 pt-6 backdrop-blur-xl">
-        <div className="flex items-end justify-between gap-3">
-          <h1 className="font-display text-4xl uppercase leading-none tracking-tight text-ink">
-            Sorteio
-          </h1>
-          {count > 0 && (
-            <span className="rounded-full border border-line bg-pitch-soft px-3 py-1 text-xs font-medium text-ink-soft">
-              <span className="font-bold text-grass-soft">{count}</span> na lista
-            </span>
-          )}
-        </div>
+        <h1 className="font-display text-4xl uppercase leading-none tracking-tight text-ink">
+          Sorteio
+        </h1>
 
         <SearchField value={query} onChange={setQuery} />
       </header>
@@ -246,6 +241,7 @@ export default function SorteioPage() {
                     selection={{
                       state,
                       onToggleAll: () => toggleGroup(g.players, state === 'all'),
+                      selectedCount: selInGroup,
                     }}
                   />
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
