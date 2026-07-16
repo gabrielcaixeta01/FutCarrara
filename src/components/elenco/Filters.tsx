@@ -52,14 +52,14 @@ export function Filters({
                 'flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors disabled:opacity-40',
                 selected
                   ? 'border-grass bg-grass/20 text-grass-soft'
-                  : 'border-line bg-pitch-soft text-slate-300 hover:border-slate-600',
+                  : 'border-line bg-pitch-soft text-ink-soft hover:border-ink-soft/40',
               )}
             >
               {levelName(level)}
               <span
                 className={cn(
                   'tabular-nums text-xs',
-                  selected ? 'text-grass-soft' : 'text-slate-500',
+                  selected ? 'text-grass-soft' : 'text-ink-soft/75',
                 )}
               >
                 {count}
@@ -85,7 +85,7 @@ export function Filters({
                 'rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
                 status === s.value
                   ? 'bg-grass text-pitch'
-                  : 'text-slate-300 hover:text-slate-100',
+                  : 'text-ink-soft hover:text-ink',
               )}
             >
               {s.label}
@@ -97,7 +97,7 @@ export function Filters({
           <button
             type="button"
             onClick={onClear}
-            className="flex items-center gap-1 text-sm text-slate-400 transition-colors hover:text-slate-100"
+            className="flex items-center gap-1 text-sm text-ink-soft transition-colors hover:text-ink"
           >
             <X className="size-4" />
             limpar filtros

@@ -17,13 +17,13 @@ export function PlayerRow({ player }: Props) {
         !player.active && 'opacity-45',
       )}
     >
-      <span className="min-w-0 flex-1 truncate text-base font-medium text-slate-100">
+      <span className="min-w-0 flex-1 truncate text-base font-medium text-ink">
         {player.name}
       </span>
       <div className="flex shrink-0 items-center gap-2">
         {isHalf(player.skill) && <HalfMark className="shrink-0" />}
         {!player.active && (
-          <span className="rounded-full bg-slate-700/50 px-2 py-0.5 text-xs text-slate-400">
+          <span className="rounded-full bg-pitch-raised px-2 py-0.5 text-xs text-ink-soft">
             Aposentado
           </span>
         )}

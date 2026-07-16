@@ -20,7 +20,7 @@ export function GuestCard({ guest, onSkill, onRemove }: Props) {
     <div className="flex items-center gap-3 rounded-xl border border-grass bg-grass/10 px-3 py-2.5">
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="truncate font-medium text-slate-100">
+          <span className="truncate font-medium text-ink">
             {guest.name}
           </span>
           <span className="rounded-full bg-grass/20 px-2 py-0.5 text-xs font-medium text-grass-soft">
@@ -40,7 +40,7 @@ export function GuestCard({ guest, onSkill, onRemove }: Props) {
         type="button"
         onClick={onRemove}
         aria-label={`Remover visitante ${guest.name}`}
-        className="flex size-11 shrink-0 items-center justify-center rounded-xl text-slate-400 transition-colors hover:bg-red-500/15 hover:text-red-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+        className="flex size-11 shrink-0 items-center justify-center rounded-xl text-ink-soft transition-colors hover:bg-red-500/15 hover:text-red-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
       >
         <X className="size-5" />
       </button>

@@ -93,10 +93,10 @@ export default function ResultadoPage() {
       </header>
 
       {loading ? (
-        <p className="py-16 text-center text-sm text-slate-500">Carregando…</p>
+        <p className="py-16 text-center text-sm text-ink-soft/75">Carregando…</p>
       ) : !result ? (
         <div className="flex flex-col items-center gap-4 py-16 text-center">
-          <p className="text-slate-400">Nenhum sorteio ainda.</p>
+          <p className="text-ink-soft">Nenhum sorteio ainda.</p>
           <Link
             href="/sorteio"
             className="h-11 rounded-xl bg-grass px-5 font-semibold leading-11 text-pitch hover:bg-grass-soft"
@@ -147,7 +147,7 @@ export default function ResultadoPage() {
             <button
               type="button"
               onClick={() => setConfirmReshuffle(true)}
-              className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-line font-medium text-slate-200 transition-colors hover:bg-line focus:outline-none focus-visible:ring-2 focus-visible:ring-grass"
+              className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-line font-medium text-ink transition-colors hover:bg-line focus:outline-none focus-visible:ring-2 focus-visible:ring-grass"
             >
               <RefreshCw className="size-5" />
               Sortear de novo

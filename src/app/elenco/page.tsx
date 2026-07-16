@@ -126,16 +126,16 @@ export default function ElencoPage() {
       <div className="px-4 pt-4">
         {players.length === 0 ? (
           <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-line px-6 py-12 text-center">
-            <Users className="size-10 text-slate-600" />
+            <Users className="size-10 text-ink-soft/50" />
             <div className="space-y-1">
-              <p className="font-medium text-slate-200">Elenco vazio</p>
-              <p className="text-sm text-slate-500">
+              <p className="font-medium text-ink">Elenco vazio</p>
+              <p className="text-sm text-ink-soft/75">
                 Cadastre jogadores pelo código e volte aqui para visualizar.
               </p>
             </div>
           </div>
         ) : filtered.length === 0 ? (
-          <p className="py-12 text-center text-sm text-slate-500">
+          <p className="py-12 text-center text-sm text-ink-soft/75">
             {searching
               ? `Ninguém com “${query.trim()}” nesses filtros.`
               : 'Nenhum jogador com esses filtros.'}

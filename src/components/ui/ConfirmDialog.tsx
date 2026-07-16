@@ -50,16 +50,16 @@ export function ConfirmDialog({
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-sm rounded-2xl border border-line bg-pitch-soft p-6 shadow-xl"
       >
-        <h2 id="confirm-title" className="text-lg font-semibold text-slate-100">
+        <h2 id="confirm-title" className="text-lg font-semibold text-ink">
           {title}
         </h2>
-        <p className="mt-2 text-sm text-slate-400">{message}</p>
+        <p className="mt-2 text-sm text-ink-soft">{message}</p>
         <div className="mt-6 flex gap-3">
           <button
             ref={cancelRef}
             type="button"
             onClick={onCancel}
-            className="h-12 flex-1 rounded-xl border border-line font-medium text-slate-200 transition-colors hover:bg-line focus:outline-none focus-visible:ring-2 focus-visible:ring-grass"
+            className="h-12 flex-1 rounded-xl border border-line font-medium text-ink transition-colors hover:bg-line focus:outline-none focus-visible:ring-2 focus-visible:ring-grass"
           >
             Cancelar
           </button>

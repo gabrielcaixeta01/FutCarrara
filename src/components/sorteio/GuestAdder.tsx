@@ -31,7 +31,7 @@ export function GuestAdder({ onAdd }: Props) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-line font-medium text-slate-300 transition-colors hover:border-grass hover:text-grass-soft"
+        className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-line font-medium text-ink-soft transition-colors hover:border-grass hover:text-grass-soft"
       >
         <Plus className="size-5" />
         Visitante
@@ -47,7 +47,7 @@ export function GuestAdder({ onAdd }: Props) {
         onChange={(e) => setName(e.target.value)}
         placeholder="Nome do visitante"
         autoComplete="off"
-        className="h-12 min-w-0 flex-1 rounded-xl border border-line bg-pitch-soft px-4 text-base text-slate-100 placeholder:text-slate-500 focus:border-grass focus:outline-none focus-visible:ring-2 focus-visible:ring-grass"
+        className="h-12 min-w-0 flex-1 rounded-xl border border-line bg-pitch-soft px-4 text-base text-ink placeholder:text-ink-soft/75 focus:border-grass focus:outline-none focus-visible:ring-2 focus-visible:ring-grass"
       />
       <button
         type="submit"
@@ -64,7 +64,7 @@ export function GuestAdder({ onAdd }: Props) {
           setOpen(false);
           setName('');
         }}
-        className="flex size-12 shrink-0 items-center justify-center rounded-xl text-slate-400 transition-colors hover:bg-pitch-soft hover:text-slate-100"
+        className="flex size-12 shrink-0 items-center justify-center rounded-xl text-ink-soft transition-colors hover:bg-pitch-soft hover:text-ink"
       >
         <X className="size-5" />
       </button>

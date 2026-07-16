@@ -24,7 +24,7 @@ export function LevelGroupHeader({ label, count, selection }: Props) {
               ? 'border-grass bg-grass text-pitch'
               : selection.state === 'partial'
                 ? 'border-grass text-grass'
-                : 'border-slate-600',
+                : 'border-ink-soft/40',
           )}
         >
           {selection.state === 'all' && <Check className="size-3.5" strokeWidth={3} />}

@@ -197,10 +197,10 @@ export default function SorteioPage() {
 
         {activePlayers.length === 0 ? (
           <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-line px-6 py-10 text-center">
-            <p className="font-medium text-slate-200">
+            <p className="font-medium text-ink">
               Nenhum jogador ativo no elenco
             </p>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-ink-soft/75">
               Adicione visitantes acima ou{' '}
               <Link href="/elenco" className="text-grass-soft underline">
                 ative jogadores no elenco
@@ -210,7 +210,7 @@ export default function SorteioPage() {
           </div>
         ) : searching ? (
           visible.length === 0 ? (
-            <p className="py-12 text-center text-sm text-slate-500">
+            <p className="py-12 text-center text-sm text-ink-soft/75">
               Ninguém com “{query.trim()}” no elenco ativo.
             </p>
           ) : (

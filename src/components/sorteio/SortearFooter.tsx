@@ -1,7 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import type { Format } from '@/types';
 import { validFormats } from '@/lib/balance';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 /**
  * Totais que fecham em times iguais, derivados do próprio balance.ts — a fonte
@@ -41,18 +43,22 @@ interface Props {
 
 /** Barra fixa: contador + formatos exatos (ou aviso quando nada fecha). */
 export function SortearFooter({ count, formats, onPick, onClear }: Props) {
+  // Limpar descarta dezenas de toques (e visitantes configurados) de uma vez:
+  // vale uma pausa antes de acontecer.
+  const [confirmClear, setConfirmClear] = useState(false);
+
   const content = (
     <>
       <div className="flex items-center justify-between">
         <span className="text-base">
           <span className="font-bold text-grass-soft">{count}</span>{' '}
-          <span className="text-slate-400">selecionados</span>
+          <span className="text-ink-soft">selecionados</span>
         </span>
         {count > 0 && (
           <button
             type="button"
-            onClick={onClear}
-            className="text-sm text-slate-400 underline-offset-2 hover:text-slate-200 hover:underline"
+            onClick={() => setConfirmClear(true)}
+            className="text-sm text-ink-soft underline-offset-2 hover:text-ink hover:underline"
           >
             Limpar
           </button>
@@ -73,7 +79,7 @@ export function SortearFooter({ count, formats, onPick, onClear }: Props) {
           ))}
         </div>
       ) : (
-        <p className="pb-1 text-sm text-slate-400">
+        <p className="pb-1 text-sm text-ink-soft">
           {count === 0
             ? 'Toque nos jogadores que vão jogar.'
             : suggestion(count)}
@@ -82,20 +88,32 @@ export function SortearFooter({ count, formats, onPick, onClear }: Props) {
     </>
   );
 
-  if (count === 0) {
-    return (
-      <div className="mt-4 rounded-2xl border border-line bg-pitch-soft px-4 py-3">
-        {content}
-      </div>
-    );
-  }
-
   return (
-    <div
-      className="fixed inset-x-0 bottom-[calc(7rem+env(safe-area-inset-bottom))] z-20 mx-auto max-w-md space-y-3 border-t border-line bg-pitch/95 px-4 pt-3 backdrop-blur"
-      style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
-    >
-      {content}
-    </div>
+    <>
+      {count === 0 ? (
+        <div className="mt-4 rounded-2xl border border-line bg-pitch-soft px-4 py-3">
+          {content}
+        </div>
+      ) : (
+        <div
+          className="fixed inset-x-0 bottom-[calc(7rem+env(safe-area-inset-bottom))] z-20 mx-auto max-w-md space-y-3 border-t border-line bg-pitch/95 px-4 pt-3 backdrop-blur"
+          style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
+        >
+          {content}
+        </div>
+      )}
+
+      <ConfirmDialog
+        open={confirmClear}
+        title="Limpar seleção?"
+        message="Desmarca todos os selecionados e remove os visitantes de hoje."
+        confirmLabel="Limpar"
+        onConfirm={() => {
+          onClear();
+          setConfirmClear(false);
+        }}
+        onCancel={() => setConfirmClear(false)}
+      />
+    </>
   );
 }

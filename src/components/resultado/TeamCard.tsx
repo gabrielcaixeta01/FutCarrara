@@ -29,7 +29,7 @@ export function TeamCard({ index, team, showLevels }: Props) {
         {showLevels && (
           <span
             title="média do time"
-            className="shrink-0 text-xs font-medium tabular-nums text-slate-500"
+            className="shrink-0 text-xs font-medium tabular-nums text-ink-soft/75"
           >
             {team.avg.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}
           </span>
@@ -40,7 +40,7 @@ export function TeamCard({ index, team, showLevels }: Props) {
         {team.players.map((p) => (
           <li
             key={p.id}
-            className="flex items-center justify-between gap-2 text-slate-100"
+            className="flex items-center justify-between gap-2 text-ink"
           >
             <span className="flex min-w-0 items-center gap-2">
               <span className="truncate">{p.name}</span>
@@ -52,7 +52,7 @@ export function TeamCard({ index, team, showLevels }: Props) {
               )}
             </span>
             {showLevels && (
-              <span className="shrink-0 text-sm font-medium text-slate-400">
+              <span className="shrink-0 text-sm font-medium text-ink-soft">
                 {levelName(p.skill)}
               </span>
             )}

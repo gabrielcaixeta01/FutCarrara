@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Users, Shuffle, Trophy } from 'lucide-react';
+import { Home, Users, Shuffle, Star, Trophy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const ITEMS = [
@@ -10,6 +10,7 @@ const ITEMS = [
   { href: '/elenco', label: 'Elenco', icon: Users },
   { href: '/sorteio', label: 'Sorteio', icon: Shuffle },
   { href: '/resultado', label: 'Times', icon: Trophy },
+  { href: '/destaques', label: 'Cartas', icon: Star },
 ] as const;
 
 export function MobileNav() {

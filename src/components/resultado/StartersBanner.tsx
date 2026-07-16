@@ -15,12 +15,12 @@ export function StartersBanner({ starters, next, onReroll }: Props) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-grass/40 bg-grass/10 px-4 py-3">
       <div className="space-y-0.5">
-        <p className="text-sm text-slate-200">
+        <p className="text-sm text-ink">
           <span className="font-semibold text-grass-soft">Começam:</span> Time{' '}
           {a + 1} × Time {b + 1}
         </p>
         {next !== undefined && (
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-ink-soft">
             Próximo a entrar: Time {next + 1}
           </p>
         )}
@@ -28,7 +28,7 @@ export function StartersBanner({ starters, next, onReroll }: Props) {
       <button
         type="button"
         onClick={onReroll}
-        className="flex items-center gap-1.5 text-sm text-slate-300 transition-colors hover:text-grass-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-grass focus-visible:rounded"
+        className="flex items-center gap-1.5 text-sm text-ink-soft transition-colors hover:text-grass-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-grass focus-visible:rounded"
       >
         <Shuffle className="size-4" />
         sortear quem começa
