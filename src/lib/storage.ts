@@ -165,13 +165,3 @@ export function loadSelection(): DrawSelection | null {
     return null;
   }
 }
-
-export function clearSelection(): void {
-  const store = ss();
-  if (!store) return;
-  try {
-    store.removeItem(SELECTION_KEY);
-  } catch {
-    // best-effort.
-  }
-}

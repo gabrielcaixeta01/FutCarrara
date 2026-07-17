@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   clearLastResult,
-  clearSelection,
   loadLastResult,
   loadSelection,
   saveLastResult,
@@ -94,12 +93,6 @@ describe('storage (com sessionStorage)', () => {
     expect(loadSelection()).toEqual(selection);
   });
 
-  it('clearSelection apaga a seleção', () => {
-    saveSelection({ selectedIds: ['a'], guests: [] });
-    clearSelection();
-    expect(loadSelection()).toBeNull();
-  });
-
   it('seleção com shape errado é rejeitada', () => {
     window.sessionStorage.setItem(
       'futcarrara:selection',
@@ -123,6 +116,5 @@ describe('storage (sem window — SSR)', () => {
     expect(() => saveLastResult(RESULT)).not.toThrow();
     expect(() => saveSelection({ selectedIds: [], guests: [] })).not.toThrow();
     expect(() => clearLastResult()).not.toThrow();
-    expect(() => clearSelection()).not.toThrow();
   });
 });

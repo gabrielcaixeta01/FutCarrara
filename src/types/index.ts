@@ -52,6 +52,3 @@ export interface Format {
   perTeam: number;
   leftover: number;
 }
-
-export const PER_TEAM_OPTIONS = [5, 6, 7] as const;
-export const NUM_TEAMS_OPTIONS = [2, 3, 4] as const;
