@@ -1,42 +1,56 @@
 'use client';
 
 import type { Team } from '@/types';
+import type { Selecao } from '@/lib/teams';
 import { isHalf, levelName } from '@/lib/levels';
 import { cn } from '@/lib/utils';
 import { HalfMark } from '@/components/ui/HalfMark';
-import { teamColor } from './teamColors';
+import { selecaoColor } from './teamColors';
 
 interface Props {
-  index: number;
+  selecao: Selecao;
   team: Team;
   showLevels: boolean;
 }
 
-export function TeamCard({ index, team, showLevels }: Props) {
-  const color = teamColor(index);
+export function TeamCard({ selecao, team, showLevels }: Props) {
+  const color = selecaoColor(selecao.name);
 
   return (
     <section
-      className={cn('rounded-2xl border bg-pitch-soft p-4', color.border)}
+      className={cn(
+        'overflow-hidden rounded-2xl border bg-pitch-soft',
+        color.border,
+      )}
     >
-      <header className="mb-3 flex items-center justify-between gap-2">
+      {/* Faixa da seleção: bandeira + nome dão identidade ao time no reveal. */}
+      <header
+        className={cn(
+          'flex items-center justify-between gap-2 px-4 py-2.5',
+          color.soft,
+        )}
+      >
         <div className="flex min-w-0 items-center gap-2">
-          <span className={cn('size-3 shrink-0 rounded-full', color.dot)} />
-          <h2 className={cn('truncate font-bold', color.text)}>
-            Time {index + 1}
+          <span className="text-xl leading-none" aria-hidden>
+            {selecao.flag}
+          </span>
+          <h2
+            className={cn(
+              'truncate font-display text-lg uppercase tracking-wide',
+              color.text,
+            )}
+          >
+            {selecao.name}
           </h2>
         </div>
         {showLevels && (
-          <span
-            title="média do time"
-            className="shrink-0 text-xs font-medium tabular-nums text-ink-soft/75"
-          >
+          <span className="shrink-0 text-xs font-medium tabular-nums text-ink-soft/80">
             {team.avg.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}
           </span>
         )}
       </header>
 
-      <ul className="space-y-1.5">
+      <ul className="space-y-1.5 p-4">
         {team.players.map((p) => (
           <li
             key={p.id}

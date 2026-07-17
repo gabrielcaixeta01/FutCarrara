@@ -1,7 +1,5 @@
 import type { DrawResult } from '@/types';
-
-/** Quadradinho colorido por time. Casa com as cores da tela de resultado. */
-const TEAM_EMOJI = ['🟦', '🟥', '🟨', '🟪'] as const;
+import { teamSelecoes } from './teams';
 
 /**
  * Código curto e legível da seed (base36). O sorteio é determinístico dada a
@@ -17,14 +15,14 @@ export function drawCode(seed: number): string {
  *
  * ⚽ FUTEBOL CARRARA
  *
- * 🟦 TIME 1
+ * 🇧🇷 BRASIL
  * Fulano, Ciclano, ...
  *
- * 🟥 TIME 2
+ * 🇦🇷 ARGENTINA
  * ...
  *
- * ▶️ Começam: Time 1 x Time 3
- * ⏭️ Próximo: Time 2
+ * ▶️ Começam: Brasil x Espanha
+ * ⏭️ Próximo: Argentina
  *
  * 🎲 Sorteio #ABC123
  *
@@ -33,19 +31,21 @@ export function drawCode(seed: number): string {
 export function formatForWhatsApp(result: DrawResult, groupName: string): string {
   const lines: string[] = [`⚽ ${groupName.toUpperCase()}`];
 
+  const selecoes = teamSelecoes(result.seed, result.teams.length);
+
   result.teams.forEach((team, i) => {
-    const emoji = TEAM_EMOJI[i] ?? '⬜';
+    const s = selecoes[i]!;
     const names = team.players
       .map((p) => (p.guest ? `${p.name} (visitante)` : p.name))
       .join(', ');
-    lines.push('', `${emoji} TIME ${i + 1}`, names);
+    lines.push('', `${s.flag} ${s.name.toUpperCase()}`, names);
   });
 
   if (result.starters) {
     const [a, b] = result.starters;
-    lines.push('', `▶️ Começam: Time ${a + 1} x Time ${b + 1}`);
+    lines.push('', `▶️ Começam: ${selecoes[a]!.name} x ${selecoes[b]!.name}`);
     if (result.next !== undefined) {
-      lines.push(`⏭️ Próximo: Time ${result.next + 1}`);
+      lines.push(`⏭️ Próximo: ${selecoes[result.next]!.name}`);
     }
   }
 

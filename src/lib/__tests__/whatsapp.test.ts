@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { drawCode, formatForWhatsApp } from '../whatsapp';
+import { teamSelecoes } from '../teams';
 import type { DrawResult, Team, Player, Skill } from '@/types';
 
 const player = (name: string, skill: Skill, guest?: true): Player => ({
@@ -37,14 +38,15 @@ describe('formatForWhatsApp', () => {
       team([player('Ana', 3), player('Bruno', 3)]),
       team([player('Carla', 3), player('Diego', 3)]),
     ]);
+    const [s1, s2] = teamSelecoes(r.seed, 2);
     expect(formatForWhatsApp(r, 'Futebol Carrara')).toBe(
       [
         '⚽ FUTEBOL CARRARA',
         '',
-        '🟦 TIME 1',
+        `${s1!.flag} ${s1!.name.toUpperCase()}`,
         'Ana, Bruno',
         '',
-        '🟥 TIME 2',
+        `${s2!.flag} ${s2!.name.toUpperCase()}`,
         'Carla, Diego',
         '',
         '🎲 Sorteio #1',
@@ -97,8 +99,9 @@ describe('formatForWhatsApp', () => {
       ],
       [0, 2],
     );
+    const sel = teamSelecoes(r.seed, 3);
     expect(formatForWhatsApp(r, 'Grupo')).toContain(
-      '▶️ Começam: Time 1 x Time 3',
+      `▶️ Começam: ${sel[0]!.name} x ${sel[2]!.name}`,
     );
   });
 
@@ -118,8 +121,12 @@ describe('formatForWhatsApp', () => {
       [1, 2],
       3,
     );
+    const sel = teamSelecoes(r.seed, 4);
     expect(formatForWhatsApp(r, 'Grupo')).toContain(
-      ['▶️ Começam: Time 2 x Time 3', '⏭️ Próximo: Time 4'].join('\n'),
+      [
+        `▶️ Começam: ${sel[1]!.name} x ${sel[2]!.name}`,
+        `⏭️ Próximo: ${sel[3]!.name}`,
+      ].join('\n'),
     );
   });
 

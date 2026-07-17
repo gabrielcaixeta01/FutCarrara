@@ -38,7 +38,7 @@ export function LevelGroupHeader({ label, count, selection }: Props) {
           {selection.state === 'partial' && <Minus className="size-3.5" strokeWidth={3} />}
         </span>
       )}
-      <span className="font-display text-sm uppercase tracking-widest text-ink">
+      <span className="font-display text-lg uppercase tracking-wide text-ink">
         {label}
       </span>
       <span className="h-px flex-1 bg-line" />

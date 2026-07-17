@@ -7,7 +7,8 @@ import type { DrawResult } from '@/types';
 import { drawTeams, rerollStarters } from '@/lib/balance';
 import { loadLastResult, saveLastResult } from '@/lib/storage';
 import { GROUP_NAME } from '@/lib/roster';
-import { drawCode, formatForWhatsApp } from '@/lib/whatsapp';
+import { teamSelecoes } from '@/lib/teams';
+import { formatForWhatsApp } from '@/lib/whatsapp';
 import { TeamCard } from '@/components/resultado/TeamCard';
 import { StartersBanner } from '@/components/resultado/StartersBanner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
@@ -70,6 +71,9 @@ export default function ResultadoPage() {
     setConfirmReshuffle(false);
   }
 
+  // Seleções sorteadas pela seed (estáveis no reroll de starters).
+  const selecoes = result ? teamSelecoes(result.seed, result.teams.length) : [];
+
   return (
     <main className="mx-auto min-h-dvh max-w-md px-4 pb-28 sm:pb-16">
       <header className="flex items-end justify-between gap-3 border-b border-line/70 pb-4 pt-6">
@@ -107,23 +111,31 @@ export default function ResultadoPage() {
       ) : (
         <div className="space-y-4 pt-4">
           {result.starters && (
-            <StartersBanner
-              starters={result.starters}
-              next={result.next}
-              onReroll={rerollStartersHandler}
-            />
+            <div className="team-reveal">
+              <StartersBanner
+                starters={result.starters}
+                next={result.next}
+                selecoes={selecoes}
+                onReroll={rerollStartersHandler}
+              />
+            </div>
           )}
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {result.teams.map((team, i) => (
-              <TeamCard key={i} index={i} team={team} showLevels={showLevels} />
+              <div
+                key={i}
+                className="team-reveal"
+                style={{ animationDelay: `${(i + 1) * 80}ms` }}
+              >
+                <TeamCard
+                  selecao={selecoes[i]!}
+                  team={team}
+                  showLevels={showLevels}
+                />
+              </div>
             ))}
           </div>
-
-          {/* A seed publicada torna o sorteio auditável: mesma seed, mesmos times. */}
-          <p className="text-center text-xs text-ink-soft/80">
-            Sorteio #{drawCode(result.seed)}
-          </p>
 
           <div className="space-y-3 pt-2">
             <button

@@ -208,6 +208,24 @@ body {
   background: color-mix(in oklab, var(--color-grass) 35%, transparent);
 }
 
+/* Reveal dos times: entrada em cascata quando a tela de resultado monta.
+   O atraso por card vem de animation-delay inline (stagger). */
+@keyframes team-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.team-reveal {
+  animation: team-reveal 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
