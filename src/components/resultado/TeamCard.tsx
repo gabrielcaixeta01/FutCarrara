@@ -2,9 +2,8 @@
 
 import type { Team } from '@/types';
 import type { Selecao } from '@/lib/teams';
-import { isHalf, levelName } from '@/lib/levels';
 import { cn } from '@/lib/utils';
-import { HalfMark } from '@/components/ui/HalfMark';
+import { LevelStars } from '@/components/ui/LevelStars';
 import { selecaoColor } from './teamColors';
 
 interface Props {
@@ -58,18 +57,13 @@ export function TeamCard({ selecao, team, showLevels }: Props) {
           >
             <span className="flex min-w-0 items-center gap-2">
               <span className="truncate">{p.name}</span>
-              {showLevels && isHalf(p.skill) && <HalfMark className="shrink-0" />}
               {p.guest && (
                 <span className="shrink-0 rounded-full bg-grass/15 px-1.5 py-0.5 text-xs text-grass-soft">
                   visitante
                 </span>
               )}
             </span>
-            {showLevels && (
-              <span className="shrink-0 text-sm font-medium text-ink-soft">
-                {levelName(p.skill)}
-              </span>
-            )}
+            {showLevels && <LevelStars skill={p.skill} />}
           </li>
         ))}
       </ul>

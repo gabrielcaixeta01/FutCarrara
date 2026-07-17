@@ -2,15 +2,6 @@ import type { DrawResult } from '@/types';
 import { teamSelecoes } from './teams';
 
 /**
- * Código curto e legível da seed (base36). O sorteio é determinístico dada a
- * seed, então publicar o código torna o resultado auditável: mesma seed,
- * mesmos times — ninguém pode acusar o admin de roubar.
- */
-export function drawCode(seed: number): string {
-  return seed.toString(36).toUpperCase();
-}
-
-/**
  * Formata o resultado como texto pronto pra colar no grupo.
  *
  * ⚽ FUTEBOL CARRARA
@@ -23,8 +14,6 @@ export function drawCode(seed: number): string {
  *
  * ▶️ Começam: Brasil x Espanha
  * ⏭️ Próximo: Argentina
- *
- * 🎲 Sorteio #ABC123
  *
  * NÃO inclui skill, soma nem média. Isso é informação interna do admin.
  */
@@ -48,8 +37,6 @@ export function formatForWhatsApp(result: DrawResult, groupName: string): string
       lines.push(`⏭️ Próximo: ${selecoes[result.next]!.name}`);
     }
   }
-
-  lines.push('', `🎲 Sorteio #${drawCode(result.seed)}`);
 
   return lines.join('\n');
 }
