@@ -6,7 +6,9 @@
  */
 import type { Player, Team, DrawResult, Format } from '@/types';
 
-// Inline em vez de importar de types (aquilo seria import de valor, não tipo).
+// Fonte única dos formatos. Inline porque este arquivo não importa valor de
+// lugar nenhum (ver CLAUDE.md → "balance.ts não importa nada"): a UI deriva a
+// lista chamando validFormats(), em vez de manter a própria cópia.
 const PER_TEAM: readonly number[] = [5, 6, 7];
 const NUM_TEAMS: readonly number[] = [2, 3, 4];
 
@@ -188,12 +190,6 @@ export function pickRotation(numTeams: number, seed: number): number[] {
     Array.from({ length: numTeams }, (_, i) => i),
     rng,
   );
-}
-
-/** Sorteia os 2 times que começam. Só faz sentido com numTeams >= 3. */
-export function pickStarters(numTeams: number, seed: number): [number, number] {
-  const rotation = pickRotation(numTeams, seed);
-  return [rotation[0]!, rotation[1]!];
 }
 
 /**
