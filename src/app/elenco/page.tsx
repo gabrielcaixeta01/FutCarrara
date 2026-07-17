@@ -39,7 +39,6 @@ export default function ElencoPage() {
 
   const activeCount = players.filter((p) => p.active).length;
   const searching = query.trim() !== '';
-  const anyFilter = levels.size > 0 || status !== 'active';
 
   // Nome + status (sem nível): base para a contagem dos chips.
   const base = useMemo(() => {
@@ -86,11 +85,6 @@ export default function ElencoPage() {
     });
   }
 
-  function clearFilters() {
-    setLevels(new Set());
-    setStatus('active');
-  }
-
   return (
     <main className="mx-auto min-h-dvh max-w-md pb-28 sm:pb-16">
       <header className="sticky top-0 z-20 space-y-4 border-b border-line/70 bg-pitch/85 px-4 pb-4 pt-6 backdrop-blur-xl">
@@ -117,8 +111,6 @@ export default function ElencoPage() {
             onToggleLevel={toggleLevel}
             status={status}
             onStatus={setStatus}
-            anyActive={anyFilter}
-            onClear={clearFilters}
           />
         </div>
       )}

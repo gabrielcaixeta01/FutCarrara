@@ -1,6 +1,5 @@
 'use client';
 
-import { X } from 'lucide-react';
 import { LEVELS_DESC, levelName, type Level } from '@/lib/levels';
 import { cn } from '@/lib/utils';
 
@@ -18,8 +17,6 @@ interface Props {
   onToggleLevel: (level: Level) => void;
   status: StatusFilter;
   onStatus: (status: StatusFilter) => void;
-  anyActive: boolean;
-  onClear: () => void;
 }
 
 export function Filters({
@@ -28,8 +25,6 @@ export function Filters({
   onToggleLevel,
   status,
   onStatus,
-  anyActive,
-  onClear,
 }: Props) {
   return (
     <div className="space-y-3">
@@ -69,40 +64,27 @@ export function Filters({
         })}
       </div>
 
-      <div className="flex items-center justify-between gap-3">
-        <div
-          role="group"
-          aria-label="Filtrar por status"
-          className="inline-flex rounded-xl border border-line bg-pitch-soft p-1"
-        >
-          {STATUS_OPTIONS.map((s) => (
-            <button
-              key={s.value}
-              type="button"
-              onClick={() => onStatus(s.value)}
-              aria-pressed={status === s.value}
-              className={cn(
-                'rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
-                status === s.value
-                  ? 'bg-grass text-pitch'
-                  : 'text-ink-soft hover:text-ink',
-              )}
-            >
-              {s.label}
-            </button>
-          ))}
-        </div>
-
-        {anyActive && (
+      <div
+        role="group"
+        aria-label="Filtrar por status"
+        className="flex w-full rounded-xl border border-line bg-pitch-soft p-1"
+      >
+        {STATUS_OPTIONS.map((s) => (
           <button
+            key={s.value}
             type="button"
-            onClick={onClear}
-            className="flex items-center gap-1 text-sm text-ink-soft transition-colors hover:text-ink"
+            onClick={() => onStatus(s.value)}
+            aria-pressed={status === s.value}
+            className={cn(
+              'flex-1 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
+              status === s.value
+                ? 'bg-grass text-pitch'
+                : 'text-ink-soft hover:text-ink',
+            )}
           >
-            <X className="size-4" />
-            limpar filtros
+            {s.label}
           </button>
-        )}
+        ))}
       </div>
     </div>
   );
