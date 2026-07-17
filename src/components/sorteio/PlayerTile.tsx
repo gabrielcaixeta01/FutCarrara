@@ -2,18 +2,16 @@
 
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { HalfMark } from '@/components/ui/HalfMark';
 
 interface Props {
   name: string;
   selected: boolean;
-  half: boolean;
   onToggle: () => void;
 }
 
 /** Tile de jogador no grid de seleção. Selecionado = preenchido de verde:
     quem já foi marcado se enxerga de longe, sem ler tile por tile. */
-export function PlayerTile({ name, selected, half, onToggle }: Props) {
+export function PlayerTile({ name, selected, onToggle }: Props) {
   return (
     <button
       type="button"
@@ -32,12 +30,7 @@ export function PlayerTile({ name, selected, half, onToggle }: Props) {
           strokeWidth={3}
         />
       )}
-      <span className="line-clamp-2 wrap-break-word">
-        {name}
-        {half && (
-          <HalfMark className={cn('ml-1', selected && 'text-pitch/70')} />
-        )}
-      </span>
+      <span className="line-clamp-2 wrap-break-word">{name}</span>
     </button>
   );
 }

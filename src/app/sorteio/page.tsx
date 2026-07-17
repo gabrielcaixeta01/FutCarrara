@@ -13,7 +13,7 @@ import {
   saveSelection,
 } from '@/lib/storage';
 import { uid } from '@/lib/utils';
-import { LEVELS_DESC, isHalf, levelName, levelOf } from '@/lib/levels';
+import { LEVELS_DESC, levelName, levelOf } from '@/lib/levels';
 import { PlayerTile } from '@/components/sorteio/PlayerTile';
 import { LevelGroupHeader } from '@/components/ui/LevelGroupHeader';
 import { SearchField } from '@/components/ui/SearchField';
@@ -215,7 +215,6 @@ export default function SorteioPage() {
                   key={p.id}
                   name={p.name}
                   selected={selectedSet.has(p.id)}
-                  half={isHalf(p.skill)}
                   onToggle={() => toggle(p.id)}
                 />
               ))}
@@ -250,7 +249,6 @@ export default function SorteioPage() {
                         key={p.id}
                         name={p.name}
                         selected={selectedSet.has(p.id)}
-                        half={isHalf(p.skill)}
                         onToggle={() => toggle(p.id)}
                       />
                     ))}

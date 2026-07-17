@@ -1,37 +1,8 @@
 'use client';
 
-import type { Player, Skill } from '@/types';
-import { isHalf, levelLabel, levelOf } from '@/lib/levels';
-import { cn } from '@/lib/utils';
-
-/** Pips de nível: 5 bolinhas, preenchidas até o nível base; o meio ponto
-    vira uma bolinha meio-preenchida. Lê-se de relance, sem palavras. */
-function LevelPips({ skill }: { skill: Skill }) {
-  const level = levelOf(skill);
-  const half = isHalf(skill);
-  return (
-    <span
-      className="flex items-center gap-1"
-      role="img"
-      aria-label={levelLabel(skill)}
-      title={levelLabel(skill)}
-    >
-      {([1, 2, 3, 4, 5] as const).map((i) => (
-        <span
-          key={i}
-          className={cn(
-            'size-1.5 rounded-full',
-            i <= level
-              ? 'bg-grass'
-              : i === level + 1 && half
-                ? 'bg-[linear-gradient(90deg,var(--color-grass)_50%,var(--color-pitch-raised)_50%)]'
-                : 'bg-pitch-raised',
-          )}
-        />
-      ))}
-    </span>
-  );
-}
+import type { Player } from '@/types';
+import { levelLabel } from '@/lib/levels';
+import { LevelStars } from '@/components/ui/LevelStars';
 
 interface Props {
   player: Player;
@@ -40,7 +11,7 @@ interface Props {
   showLevelName?: boolean;
 }
 
-/** Linha do elenco: nome + nível em pips. Vive dentro do card do grupo
+/** Linha do elenco: nome + nível em estrelas. Vive dentro do card do grupo
     (quem desenha borda e divisórias é a lista, não a linha). */
 export function PlayerRow({ player, showLevelName = false }: Props) {
   return (
@@ -54,7 +25,7 @@ export function PlayerRow({ player, showLevelName = false }: Props) {
             {levelLabel(player.skill)}
           </span>
         )}
-        <LevelPips skill={player.skill} />
+        <LevelStars skill={player.skill} />
       </div>
     </li>
   );

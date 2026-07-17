@@ -8,14 +8,14 @@ import { isHalf, levelLabel, levelOf } from '@/lib/levels';
     cheia recortada em 50% por cima da vazia — mesma ideia do meio-pip. */
 function StarSlot({ fill }: { fill: 0 | 0.5 | 1 }) {
   return (
-    <span className="relative inline-flex size-3.5">
-      <Star className="size-3.5 fill-pitch-raised text-pitch-raised" />
+    <span className="relative inline-flex size-3">
+      <Star className="size-3 fill-pitch-raised text-pitch-raised" />
       {fill > 0 && (
         <span
           className="absolute inset-0 overflow-hidden"
           style={fill === 0.5 ? { width: '50%' } : undefined}
         >
-          <Star className="size-3.5 fill-grass text-grass" />
+          <Star className="size-3 fill-grass text-grass" />
         </span>
       )}
     </span>
@@ -23,7 +23,7 @@ function StarSlot({ fill }: { fill: 0 | 0.5 | 1 }) {
 }
 
 /** Nível em 5 estrelas, preenchidas até o nível base; o meio ponto vira uma
-    estrela meia-cheia. Versão em estrelas do LevelPips do elenco. */
+    estrela meia-cheia. Indicador único de nível no elenco e no resultado. */
 export function LevelStars({ skill }: { skill: Skill }) {
   const level = levelOf(skill);
   const half = isHalf(skill);
