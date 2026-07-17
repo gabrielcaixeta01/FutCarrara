@@ -4,20 +4,12 @@ import { useMemo, useState } from 'react';
 import { Users } from 'lucide-react';
 import type { Player } from '@/types';
 import { ROSTER } from '@/lib/roster';
+import { normalizeText } from '@/lib/utils';
 import { LEVELS_DESC, levelName, levelOf, type Level } from '@/lib/levels';
 import { PlayerRow } from '@/components/elenco/PlayerRow';
 import { Filters, type StatusFilter } from '@/components/elenco/Filters';
 import { LevelGroupHeader } from '@/components/ui/LevelGroupHeader';
 import { SearchField } from '@/components/ui/SearchField';
-
-/** Normaliza pra busca: sem acento, minúsculo. "José" casa com "jose". */
-function norm(s: string): string {
-  return s
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .trim();
-}
 
 /** Ativos primeiro, depois alfabético. */
 const byActiveThenName = (a: Player, b: Player) =>
@@ -42,9 +34,9 @@ export default function ElencoPage() {
 
   // Nome + status (sem nível): base para a contagem dos chips.
   const base = useMemo(() => {
-    const q = norm(query);
+    const q = normalizeText(query);
     return players.filter((p) => {
-      const okName = q ? norm(p.name).includes(q) : true;
+      const okName = q ? normalizeText(p.name).includes(q) : true;
       const okStatus = status === 'active' ? p.active : !p.active;
       return okName && okStatus;
     });

@@ -12,7 +12,7 @@ import {
   saveLastResult,
   saveSelection,
 } from '@/lib/storage';
-import { uid } from '@/lib/utils';
+import { normalizeText, uid } from '@/lib/utils';
 import { LEVELS_DESC, levelName, levelOf } from '@/lib/levels';
 import { PlayerTile } from '@/components/sorteio/PlayerTile';
 import { LevelGroupHeader } from '@/components/ui/LevelGroupHeader';
@@ -20,14 +20,6 @@ import { SearchField } from '@/components/ui/SearchField';
 import { GuestAdder } from '@/components/sorteio/GuestAdder';
 import { GuestCard } from '@/components/sorteio/GuestCard';
 import { SortearFooter } from '@/components/sorteio/SortearFooter';
-
-function norm(s: string): string {
-  return s
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .trim();
-}
 
 export default function SorteioPage() {
   const router = useRouter();
@@ -86,9 +78,9 @@ export default function SorteioPage() {
 
   // Busca ativa: lista achatada (sem headers). Ordena por nome.
   const visible = useMemo(() => {
-    const q = norm(query);
+    const q = normalizeText(query);
     return activePlayers
-      .filter((p) => (q ? norm(p.name).includes(q) : true))
+      .filter((p) => (q ? normalizeText(p.name).includes(q) : true))
       .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
   }, [activePlayers, query]);
 

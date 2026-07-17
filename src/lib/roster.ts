@@ -9,6 +9,7 @@
  * - `active: false` = aposentado. Fica no elenco, some do sorteio.
  */
 import type { Player, Skill } from '@/types';
+import { normalizeText } from '@/lib/utils';
 
 /** Nome do grupo. Vai no cabeçalho do texto do WhatsApp. */
 export const GROUP_NAME = 'Futebol Carrara';
@@ -19,11 +20,7 @@ export const GROUP_NAME = 'Futebol Carrara';
  * id novo, e isso é aceitável porque nada guarda id entre sessões.
  */
 function slug(name: string): string {
-  return name
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .trim()
+  return normalizeText(name)
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 }
