@@ -1,17 +1,11 @@
 import Link from 'next/link';
-import {
-  ChevronRight,
-  Shuffle,
-  Star,
-  Users,
-  type LucideIcon,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { ArrowRight, Shuffle, Star, Users, type LucideIcon } from 'lucide-react';
+import { HomeTagline } from '@/components/home/HomeTagline';
 import { MounjaroEasterEgg } from '@/components/ui/MounjaroEasterEgg';
 
 export default function HomePage() {
   return (
-    <main className="relative mx-auto flex min-h-dvh max-w-md flex-col px-6 pt-20">
+    <main className="relative mx-auto flex min-h-dvh max-w-md flex-col px-6 pt-16">
       <MounjaroEasterEgg />
       {/* Assinatura: risca do meio-campo + círculo central, bem sutil */}
       <div
@@ -28,82 +22,98 @@ export default function HomePage() {
         </svg>
       </div>
 
-      <header className="space-y-4">
+      <header className="team-reveal space-y-4">
         <h1 className="font-display text-[4.25rem] uppercase leading-[0.82] tracking-tight text-ink">
           Fut
           <br />
           Carrara
         </h1>
-        <p className="max-w-xs text-sm text-ink-soft">
-          Fim da Panelinha do Carrara.
-        </p>
+        <HomeTagline />
       </header>
 
-      <nav className="mt-12 space-y-3">
-        <HomeCard
+      {/* Herói: sortear é o motivo do app existir, então ocupa o palco sozinho.
+          É o único bloco verde-cheio do app — o resto da página fica quieto. */}
+      <div className="team-reveal mt-10" style={{ animationDelay: '90ms' }}>
+        <Link
           href="/sorteio"
-          icon={Shuffle}
-          title="Sortear times"
-          desc="Escolha os presentes e monte os times."
-          accent
-        />
-        <HomeCard
-          href="/elenco"
-          icon={Users}
-          title="Elenco"
-          desc="Veja o grupo e os níveis."
-        />
-        <HomeCard
-          href="/destaques"
-          icon={Star}
-          title="Jogadores Destaque"
-          desc="Veja as cartas dos principais nomes."
-          accent
-        />
-      </nav>
+          className="group relative block overflow-hidden rounded-3xl bg-linear-to-br from-grass to-grass-deep p-6 text-pitch transition-all active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-grass-soft focus-visible:ring-offset-2 focus-visible:ring-offset-pitch"
+        >
+          {/* Meio-campo como marca d'água, cortado pela borda do card */}
+          <svg
+            aria-hidden
+            viewBox="0 0 200 200"
+            className="pointer-events-none absolute -bottom-16 -right-10 size-48 opacity-[0.14]"
+          >
+            <circle cx="100" cy="100" r="70" fill="none" stroke="currentColor" strokeWidth="3" />
+            <circle cx="100" cy="100" r="3" fill="currentColor" />
+            <line x1="0" y1="100" x2="200" y2="100" stroke="currentColor" strokeWidth="3" />
+          </svg>
 
+          <div className="flex items-start justify-between">
+            <span className="flex size-12 items-center justify-center rounded-2xl bg-pitch text-grass">
+              <Shuffle className="size-6" strokeWidth={2.5} />
+            </span>
+            <ArrowRight className="size-6 transition-transform group-hover:translate-x-1" />
+          </div>
+
+          <span className="mt-6 block font-display text-5xl uppercase leading-[0.9] tracking-tight">
+            Tirar
+            <br />
+            times
+          </span>
+          <p className="mt-3 max-w-52 text-sm font-semibold leading-snug text-pitch/80">
+            Marca quem veio. O sorteio faz o resto.
+          </p>
+        </Link>
+      </div>
+
+      <nav className="mt-3 grid grid-cols-2 gap-3">
+        <div className="team-reveal" style={{ animationDelay: '170ms' }}>
+          <SecondaryCard
+            href="/elenco"
+            icon={Users}
+            title="Elenco"
+            desc="Quem é quem no grupo."
+          />
+        </div>
+        <div className="team-reveal" style={{ animationDelay: '240ms' }}>
+          <SecondaryCard
+            href="/destaques"
+            icon={Star}
+            title="Cartas"
+            desc="Os mitos da pelada."
+          />
+        </div>
+      </nav>
     </main>
   );
 }
 
-function HomeCard({
+function SecondaryCard({
   href,
   icon: Icon,
   title,
   desc,
-  accent,
 }: {
   href: string;
   icon: LucideIcon;
   title: string;
   desc: string;
-  accent?: boolean;
 }) {
   return (
     <Link
       href={href}
-      className={cn(
-        'group flex items-center gap-4 rounded-2xl border p-5 transition-all active:scale-[0.99]',
-        accent
-          ? 'border-grass/40 bg-grass/10 hover:border-grass'
-          : 'border-line bg-pitch-soft hover:border-grass/50',
-      )}
+      className="group flex h-full flex-col gap-3 rounded-2xl border border-line bg-pitch-soft p-4 transition-colors hover:border-grass/50 active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-grass"
     >
-      <span
-        className={cn(
-          'flex size-12 shrink-0 items-center justify-center rounded-xl',
-          accent ? 'bg-grass text-pitch' : 'bg-pitch-raised text-grass-soft',
-        )}
-      >
-        <Icon className="size-6" />
+      <span className="flex size-10 items-center justify-center rounded-xl bg-pitch-raised text-grass-soft">
+        <Icon className="size-5" />
       </span>
-      <span className="min-w-0 flex-1">
+      <span>
         <span className="block font-display text-lg uppercase tracking-wide text-ink">
           {title}
         </span>
-        <span className="block text-sm text-ink-soft">{desc}</span>
+        <span className="mt-0.5 block text-xs text-ink-soft">{desc}</span>
       </span>
-      <ChevronRight className="size-5 shrink-0 text-ink-soft transition-transform group-hover:translate-x-0.5" />
     </Link>
   );
 }
